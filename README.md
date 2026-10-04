@@ -97,9 +97,13 @@ The card in the top corner is in `js/content/site.js` under `captain`. For each 
 
 ## Put it online
 
-1. On GitHub, open the repository, then Settings, then Pages.
-2. Under "Build and deployment", choose "Deploy from a branch", pick `main` and `/ (root)`, and save.
+GitHub Pages is free, but only for public repositories. If you see "Upgrade or make this repository public to enable Pages", do step 1. Otherwise start at step 2.
+
+1. Settings, then General, scroll to the bottom, "Change visibility", "Make public". The repo only holds your portfolio, so there is nothing private in it. Do not add files here that you would not want to be seen.
+2. Settings, then Pages. Under "Build and deployment", set Source to "Deploy from a branch", pick `main` and `/ (root)`, and save.
 3. After a minute, your address appears at the top of that page.
+
+Prefer to keep the repo private? Netlify and Cloudflare Pages both publish private repos for free. Connect the repo, leave the build command empty, and set the publish folder to the main folder.
 
 ## Good to know
 
