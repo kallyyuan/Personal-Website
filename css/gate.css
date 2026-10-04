@@ -1,0 +1,144 @@
+/* ==========================================================================
+   SCREEN 1: BOARDING GATE
+   ========================================================================== */
+
+#screen-gate { display: grid; place-items: center; padding-bottom: 24px; }
+
+.gate-wrap {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: clamp(26px, 5.5vh, 52px);
+  width: 100%; padding: 12px clamp(16px, 4vw, 40px) 8px; text-align: center;
+}
+.gate-copy { transition: opacity .8s ease, transform .8s var(--ease); }
+.is-torn .gate-copy { opacity: 0; transform: translateY(-16px); }
+.gate-copy .eyebrow { margin-bottom: 14px; }
+.gate-title {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(2.3rem, 5.8vw, 4.8rem); line-height: 1.05; letter-spacing: -.012em;
+  max-width: 19ch; margin: 0 auto; color: var(--ink); text-wrap: balance;
+}
+.gate-title em { font-style: italic; color: var(--blue); }
+
+.gate-plane {
+  position: absolute; left: 0; top: 16%; width: 24px; height: 24px; color: #fff; pointer-events: none;
+  filter: drop-shadow(0 6px 8px rgba(31, 109, 179, .25));
+  animation: plane-cross 110s linear infinite;
+}
+.gate-plane .ico { width: 100%; height: 100%; fill: currentColor; stroke: none; transform: rotate(90deg); }
+.gate-plane::before {
+  content: ''; position: absolute; right: 70%; top: 50%; width: 24vw; height: 2px; margin-top: -1px;
+  background: linear-gradient(to left, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0));
+}
+@keyframes plane-cross { from { transform: translate(-30vw, 6vh); } to { transform: translate(104vw, -5vh); } }
+
+/* ---------- The boarding pass ---------- */
+.pass {
+  --tear: 0; --n: 13px;
+  position: relative; display: flex; width: min(780px, 92vw); height: 262px;
+  touch-action: manipulation; user-select: none; -webkit-user-select: none; cursor: grab;
+  transition: transform .5s var(--ease);
+}
+.pass.is-held { cursor: grabbing; }
+/* the shadow sits behind the halves, so the notches show the real sky */
+.pass-shadow {
+  position: absolute; inset: 0; border-radius: 20px; pointer-events: none;
+  box-shadow: 0 26px 40px -18px rgba(31, 109, 179, .42), 0 4px 10px -4px rgba(31, 109, 179, .2);
+  opacity: calc(1 - var(--tear) * .95);
+}
+.pass-half { position: relative; background: var(--paper); color: var(--ink); overflow: hidden; display: flex; flex-direction: column; text-align: left; }
+.pass-main {
+  flex: 0 0 71%; border-radius: 20px 0 0 20px; transform-origin: 100% 100%;
+  transform: rotate(calc(var(--tear) * -2deg));
+  -webkit-mask: radial-gradient(circle at 100% 0, transparent var(--n), #000 calc(var(--n) + .5px)) top / 100% 51% no-repeat,
+                radial-gradient(circle at 100% 100%, transparent var(--n), #000 calc(var(--n) + .5px)) bottom / 100% 51% no-repeat;
+  mask: radial-gradient(circle at 100% 0, transparent var(--n), #000 calc(var(--n) + .5px)) top / 100% 51% no-repeat,
+        radial-gradient(circle at 100% 100%, transparent var(--n), #000 calc(var(--n) + .5px)) bottom / 100% 51% no-repeat;
+}
+.pass-stub {
+  flex: 1; border-radius: 0 20px 20px 0; transform-origin: 0 100%;
+  transform: translate(calc(var(--tear) * 16px), 0) rotate(calc(var(--tear) * 9deg));
+  -webkit-mask: radial-gradient(circle at 0 0, transparent var(--n), #000 calc(var(--n) + .5px)) top / 100% 51% no-repeat,
+                radial-gradient(circle at 0 100%, transparent var(--n), #000 calc(var(--n) + .5px)) bottom / 100% 51% no-repeat;
+  mask: radial-gradient(circle at 0 0, transparent var(--n), #000 calc(var(--n) + .5px)) top / 100% 51% no-repeat,
+        radial-gradient(circle at 0 100%, transparent var(--n), #000 calc(var(--n) + .5px)) bottom / 100% 51% no-repeat;
+}
+/* the dotted perforation */
+.pass-main::after {
+  content: ''; position: absolute; right: 0; top: 14px; bottom: 14px; width: 2px;
+  background: repeating-linear-gradient(to bottom, rgba(20, 48, 73, .38) 0 6px, transparent 6px 12px);
+}
+
+.pass-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  height: 44px; padding: 0 22px; background: var(--blue-deep); color: #fff;
+  font-size: .75rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+}
+.pass-airline { display: inline-flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 1.05rem; letter-spacing: .04em; text-transform: none; font-weight: 400; }
+.pass-airline .ico { width: 1.15em; height: 1.15em; fill: #fff; stroke: none; transform: rotate(45deg); }
+.pass-body { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; padding: 14px 22px 16px; min-height: 0; }
+
+.pass-label { display: block; font-size: .6875rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+.pass-dest-name { display: block; font-family: var(--display); font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.05; color: var(--ink); }
+.pass-fields { display: flex; flex-wrap: wrap; gap: 8px 26px; margin: 0; }
+.pass-field dt { font-size: .6875rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+.pass-field dd { margin: 0; font-size: 1.05rem; font-weight: 600; }
+.pass-fields--stub { flex-direction: column; gap: 8px; }
+.pass-fields--stub .pass-field dd { font-size: .95rem; }
+.pass-barcode { height: 34px; }
+.pass-barcode svg { width: 100%; height: 100%; fill: var(--ink); opacity: .85; }
+.pass-stub .pass-barcode { height: 28px; }
+
+/* torn paper strip along the perforation */
+.pass-fibre {
+  position: absolute; left: 71%; top: 0; bottom: 0; width: 7px; transform: translateX(-50%); pointer-events: none;
+  background: #fff; opacity: .95;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--tear) * 100%), transparent calc(var(--tear) * 100%));
+  mask-image: linear-gradient(to bottom, #000 calc(var(--tear) * 100%), transparent calc(var(--tear) * 100%));
+}
+
+/* the dotted line you grab, and the scissors that follow your tear */
+.pass-grip {
+  position: absolute; left: 71%; top: -8px; bottom: -8px; width: 60px; transform: translateX(-50%);
+  padding: 0; border: 0; background: transparent; cursor: grab; touch-action: none; border-radius: 12px;
+}
+.pass-grip:focus-visible { outline: 3px solid var(--blue); outline-offset: 0; background: rgba(31, 109, 179, .08); }
+.pass-scissors {
+  position: absolute; left: 50%; top: calc(8px + var(--tear) * (100% - 16px)); width: 30px; height: 30px; margin: -15px 0 0 -15px;
+  display: grid; place-items: center; color: var(--blue-deep); transform: rotate(90deg);
+  background: #fff; border-radius: 50%; box-shadow: 0 6px 14px -4px rgba(23, 80, 127, .45);
+  animation: snip 2.4s ease-in-out infinite;
+}
+.pass-scissors .ico { width: 17px; height: 17px; }
+.pass.is-held .pass-scissors, .is-torn .pass-scissors { animation: none; }
+@keyframes snip { 0%, 100% { transform: rotate(90deg) translateX(0); } 50% { transform: rotate(90deg) translateX(5px); } }
+
+/* ---------- Phones: the pass stacks and tears left to right ---------- */
+@media (max-width: 640px) {
+  .pass { flex-direction: column; width: min(360px, 90vw); height: auto; }
+  .pass-main { flex: none; border-radius: 20px 20px 0 0; transform-origin: 0 100%; transform: rotate(calc(var(--tear) * 1.5deg));
+    -webkit-mask: radial-gradient(circle at 0 100%, transparent var(--n), #000 calc(var(--n) + .5px)) left / 51% 100% no-repeat,
+                  radial-gradient(circle at 100% 100%, transparent var(--n), #000 calc(var(--n) + .5px)) right / 51% 100% no-repeat;
+    mask: radial-gradient(circle at 0 100%, transparent var(--n), #000 calc(var(--n) + .5px)) left / 51% 100% no-repeat,
+          radial-gradient(circle at 100% 100%, transparent var(--n), #000 calc(var(--n) + .5px)) right / 51% 100% no-repeat; }
+  .pass-stub { flex: none; border-radius: 0 0 20px 20px; transform-origin: 100% 0; transform: translate(0, calc(var(--tear) * 14px)) rotate(calc(var(--tear) * -8deg));
+    -webkit-mask: radial-gradient(circle at 0 0, transparent var(--n), #000 calc(var(--n) + .5px)) left / 51% 100% no-repeat,
+                  radial-gradient(circle at 100% 0, transparent var(--n), #000 calc(var(--n) + .5px)) right / 51% 100% no-repeat;
+    mask: radial-gradient(circle at 0 0, transparent var(--n), #000 calc(var(--n) + .5px)) left / 51% 100% no-repeat,
+          radial-gradient(circle at 100% 0, transparent var(--n), #000 calc(var(--n) + .5px)) right / 51% 100% no-repeat; }
+  .pass-main::after { left: 14px; right: 14px; top: auto; bottom: 0; width: auto; height: 2px;
+    background: repeating-linear-gradient(to right, rgba(20, 48, 73, .38) 0 6px, transparent 6px 12px); }
+  .pass-main .pass-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .pass-stub .pass-head { display: none; }
+  .pass-stub .pass-body { flex-direction: row; align-items: flex-end; gap: 14px; padding: 16px 20px; }
+  .pass-fields--stub { flex-direction: row; flex-wrap: wrap; gap: 6px 18px; }
+  .pass-stub .pass-barcode { width: 96px; flex: none; }
+  .pass-fibre { left: 0; right: 0; top: var(--perf, 60%); width: auto; height: 7px; transform: translateY(-50%); bottom: auto; }
+  .pass-grip { left: -8px; right: -8px; top: var(--perf, 60%); bottom: auto; width: auto; height: 60px; transform: translateY(-50%); }
+  .pass-scissors { top: 50%; left: calc(8px + var(--tear) * (100% - 16px)); margin: -15px 0 0 -15px; transform: none; animation: none; }
+  .pass-fibre { -webkit-mask-image: linear-gradient(to right, #000 calc(var(--tear) * 100%), transparent calc(var(--tear) * 100%)); mask-image: linear-gradient(to right, #000 calc(var(--tear) * 100%), transparent calc(var(--tear) * 100%)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gate-plane { animation: none; display: none; }
+  .pass-scissors { animation: none; }
+}
