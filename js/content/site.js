@@ -60,6 +60,13 @@ KALLY.site = {
     label: 'Short haul',
     emoji: '✈️',            /* a small wink next to the link. Delete the emoji to remove it. */
     minutes: 2,
+    takeOff: 'Take off',
+    /* what the visitor sees when the tour ends */
+    landing: {
+      emoji: '🛬',
+      title: "Welcome to Kally's World",
+      line: 'That was the short haul. The long haul is everything else.',
+    },
     ids: ['work-copy-1', 'work-strategy-1', 'work-research-1', 'writing-personal-1', 'sh-photos-1'],
   },
 

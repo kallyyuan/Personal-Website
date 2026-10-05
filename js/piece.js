@@ -126,30 +126,47 @@
   function render(r) {
     const it = D.itemById[r.itemId];
     const from = r.q.get('from');
-    const list = it.siblings || [it];
-    const prevIt = list[it.index - 1], nextIt = list[it.index + 1];
-    const where = whereIs(it);
+    /* on the short haul, previous and next follow the tour instead of the group */
+    const stops = KY.tourStops ? KY.tourStops() : [];
+    const stopAt = from === 'tour' ? stops.indexOf(it) : -1;
+    const touring = stopAt >= 0;
+    const list = touring ? stops : (it.siblings || [it]);
+    const pos = touring ? stopAt : it.index;
+    const prevIt = list[pos - 1], nextIt = list[pos + 1];
+    const where = touring
+      ? { crumbs: [[site.tour.label, KY.href.tour]], group: KY.stopLabel(it), back: { href: KY.href.tour, label: site.tour.label } }
+      : whereIs(it);
     backHref = where.back.href;
 
     const crumbs = h('nav', { class: 'pcrumbs', 'aria-label': 'Where you are' },
       h('a', { href: KY.href.menu }, ui.menu),
       where.crumbs.map(([label, href]) => [KY.icon('arrow-right'), h('a', { href }, label)]),
       KY.icon('arrow-right'), h('span', { 'aria-current': 'page' }, where.group),
-      h('span', { class: 'pcrumbs-pos' }, KY.pad2(it.index + 1) + ' / ' + KY.pad2(list.length)));
+      h('span', { class: 'pcrumbs-pos' }, KY.pad2(pos + 1) + ' / ' + KY.pad2(list.length)));
 
     const step = (target, dir) => {
       const cls = 'pstep pstep--' + (dir < 0 ? 'prev' : 'next');
-      if (!target) return h('span', { class: cls + ' is-off', 'aria-hidden': 'true' });
-      return h('a', { class: cls, href: KY.href.piece(target.id, from) },
+      const landEmoji = (site.tour.landing && site.tour.landing.emoji) || '';
+      const link = target ? { href: KY.href.piece(target.id, from), label: dir < 0 ? ui.previous : ui.next, title: target.title }
+        : touring ? (dir < 0 ? { href: KY.href.tour, label: ui.previous, title: 'Boarding' } : { href: KY.href.tour + '?landed=1', label: ui.next, title: 'Land ' + landEmoji })
+        : null;
+      if (!link) return h('span', { class: cls + ' is-off', 'aria-hidden': 'true' });
+      return h('a', { class: cls, href: link.href },
         dir < 0 ? KY.icon('arrow-left') : null,
-        h('span', { class: 'pstep-text' }, h('span', { class: 'pstep-label' }, dir < 0 ? ui.previous : ui.next), h('span', { class: 'pstep-title' }, target.title)),
+        h('span', { class: 'pstep-text' }, h('span', { class: 'pstep-label' }, link.label), h('span', { class: 'pstep-title' }, link.title)),
         dir > 0 ? KY.icon('arrow-right') : null);
     };
 
     killPuzzle();
     const work = renderWork(it);
 
-    const article = h('article', { class: 'piece' },
+    const progress = touring
+      ? h('div', { class: 'tourbar', role: 'img', 'aria-label': 'Stop ' + (pos + 1) + ' of ' + list.length },
+        list.map((x, k) => h('span', { class: k <= pos ? 'is-done' : null })))
+      : null;
+
+    const article = h('article', { class: 'piece' + (touring ? ' piece--tour' : '') },
+      progress,
       crumbs,
       h('header', { class: 'phead' },
         KY.tag(it.track),
@@ -159,9 +176,11 @@
       it.shows ? h('aside', { class: 'pshows' }, h('span', { class: 'plabel' }, ui.shows), h('p', null, it.shows)) : null,
       h('nav', { class: 'psteps', 'aria-label': where.group }, step(prevIt, -1), step(nextIt, 1)),
       h('div', { class: 'pexits' },
-        h('a', { class: 'btn', href: where.back.href }, KY.icon('arrow-left'), where.back.label),
-        h('a', { class: 'btn btn--quiet', href: KY.href.menu }, ui.backToMenu),
-        it.section === 'maps' ? h('a', { class: 'btn btn--quiet', href: KY.href.section('maps') }, '📍', ui.backToMap) : null));
+        touring
+          ? [h('a', { class: 'btn', href: KY.href.menu }, 'Leave the tour')]
+          : [h('a', { class: 'btn', href: where.back.href }, KY.icon('arrow-left'), where.back.label),
+            h('a', { class: 'btn btn--quiet', href: KY.href.menu }, ui.backToMenu),
+            it.section === 'maps' ? h('a', { class: 'btn btn--quiet', href: KY.href.section('maps') }, site.map.pin || '📍', ui.backToMap) : null]));
 
     el.replaceChildren(article);
     el.scrollTop = 0;

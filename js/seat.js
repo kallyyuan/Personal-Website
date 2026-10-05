@@ -12,7 +12,7 @@
   const NS = 'http://www.w3.org/2000/svg';
   const W = window.KALLY_WORLD;
 
-  let viewEl, backEl, brandEl, timeEl, footEl, bootEl, beltEl, lightBtn, clock = 0, beltTimer = 0;
+  let viewEl, backEl, brandEl, timeEl, footEl, footCount, bootEl, beltEl, lightBtn, clock = 0, beltTimer = 0;
   const based = D.places.find((p) => p.group === 'based') || D.places[0];
   const NIGHT_KEY = 'ky-night';
 
@@ -145,10 +145,11 @@
     timeEl = h('span', { class: 'scr-time' });
     const bar = h('header', { class: 'scr-bar' }, h('div', { class: 'scr-left' }, backEl, brandEl), timeEl);
     viewEl = h('div', { class: 'scr-view' });
+    footCount = h('span', { class: 'foot-count' });
     const wink = (e) => (e ? h('span', { class: 'emoji', 'aria-hidden': 'true' }, e) : null);
     footEl = h('footer', { class: 'scr-foot' },
       h('a', { class: 'foot-link', href: KY.href.tour }, h('span', null, site.tour.label + ', ' + site.tour.minutes + ' minutes'), wink(site.tour.emoji), KY.icon('arrow-long')),
-      h('a', { class: 'foot-link', href: KY.href.passport }, h('span', null, site.ui.passport), wink(site.ui.passportEmoji)));
+      h('a', { class: 'foot-link', href: KY.href.passport }, h('span', null, site.ui.passport), wink(site.ui.passportEmoji), footCount));
     bootEl = h('div', { class: 'boot', 'aria-hidden': 'true' }, h('span', null, site.pass.airline));
     const ui = h('div', { class: 'screen-ui' }, bar, viewEl, footEl);
 
@@ -188,6 +189,7 @@
     },
     enter(r, ctx) {
       const view = r.view || 'menu';
+      if (KY.passport) { KY.passport.board(); footCount.textContent = KY.passport.count() + '/' + KY.passport.total(); }
       el.dataset.view = view;
       el.classList.toggle('is-hub', view === 'menu');
       const V = KY.views && KY.views[view];

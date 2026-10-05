@@ -1,0 +1,98 @@
+/* ==========================================================================
+   PASSPORT, SHORT HAUL and the landing screen
+   ========================================================================== */
+
+/* buttons on the seat screen follow the reading light too */
+#screen-seat[data-night="true"] .btn { border-color: currentColor; color: var(--scr-ink); }
+#screen-seat[data-night="true"] .btn:hover { background: var(--scr-ink); color: var(--scr-bg); }
+#screen-seat[data-night="true"] .btn--quiet { border-color: var(--scr-line); }
+
+/* the little count beside "Passport" in the menu footer */
+.foot-count { margin-left: 2px; font-variant-numeric: tabular-nums; color: var(--orange-text); }
+#screen-seat[data-night="true"] .foot-count { color: #FFB27A; }
+
+/* ---------- the stamps ---------- */
+.stamp { display: block; width: min(76%, 220px); height: auto; overflow: visible; color: var(--st, #456F72); transform: rotate(var(--rot, 0deg)); opacity: .94; }
+.stamp text { fill: currentColor; font-family: var(--display); font-weight: 400; text-anchor: middle; }
+#screen-seat[data-night="true"] .stamp { filter: brightness(1.5) saturate(1.1); }
+.stamp.is-fresh { animation: stamp-in .85s .35s var(--ease) both; }
+@keyframes stamp-in {
+  from { opacity: 0; transform: rotate(calc(var(--rot, 0deg) - 12deg)) scale(1.9); }
+  55% { opacity: 1; }
+  to { opacity: .94; transform: rotate(var(--rot, 0deg)) scale(1); }
+}
+
+/* ---------- the passport page ---------- */
+.pp-book { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--scr-line); border-left: 1px solid var(--scr-line); }
+.pp-slot { position: relative; display: grid; place-items: center; aspect-ratio: 1.12; border-right: 1px solid var(--scr-line); border-bottom: 1px solid var(--scr-line); color: inherit; text-decoration: none; }
+.pp-slot.is-stamped .stamp { width: min(78%, 230px); }
+.pp-ghost { font: 300 clamp(2rem, 4vw, 3.2rem)/1 var(--display); letter-spacing: .08em; padding-left: .08em; color: var(--scr-line); transition: color .5s; }
+.pp-hint { position: absolute; left: 0; right: 0; bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; font: 600 .58rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--scr-soft); transition: color .4s; }
+.pp-hint .ico { width: 1.5em; height: 1.5em; color: var(--orange); opacity: 0; transform: translateX(-8px); transition: opacity .4s, transform .5s var(--ease); }
+.pp-slot.is-empty:hover .pp-ghost, .pp-slot.is-empty:focus-visible .pp-ghost { color: var(--orange); }
+.pp-slot.is-empty:hover .pp-hint, .pp-slot.is-empty:focus-visible .pp-hint { color: var(--scr-ink); }
+.pp-slot.is-empty:hover .pp-hint .ico, .pp-slot.is-empty:focus-visible .pp-hint .ico { opacity: 1; transform: none; }
+.pp-slot.is-empty:focus-visible { outline: 1px solid var(--orange); outline-offset: -4px; }
+
+/* note on a city page when it stamps the passport */
+.stampnote {
+  position: absolute; right: 18px; top: 16px; z-index: 3; display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px;
+  background: color-mix(in srgb, var(--scr-bg) 90%, transparent); box-shadow: 0 0 0 1px var(--scr-line);
+  font: 600 .6rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--scr-ink); text-decoration: none;
+  animation: stampnote 6.5s var(--ease) 1.4s both;
+}
+@keyframes stampnote {
+  0% { opacity: 0; transform: translateY(-8px); }
+  8%, 84% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-6px); pointer-events: none; }
+}
+
+/* ---------- the short haul ---------- */
+.tour-list { list-style: none; margin: 0 0 6px; padding: 0; border-top: 1px solid var(--scr-line); }
+.tour-row { display: grid; grid-template-columns: 3ch 10ch minmax(0, 1fr) auto; gap: 8px 20px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--scr-line); }
+.tour-n { font: 500 .62rem/1 var(--sans); letter-spacing: .2em; color: var(--orange-text); }
+#screen-seat[data-night="true"] .tour-n { color: #FFB27A; }
+.tour-kind { font: 600 .58rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--scr-soft); }
+.tour-title { font: 300 1.35rem/1.2 var(--display); letter-spacing: -.01em; }
+.tour-go {
+  display: inline-flex; align-items: center; gap: 12px; margin-top: 34px; padding-bottom: 7px; border-bottom: 1px solid var(--orange);
+  font: 600 .74rem/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--orange-text); text-decoration: none;
+}
+#screen-seat[data-night="true"] .tour-go { color: #FFB27A; }
+.vhead .tour-go { margin-top: 0; }
+.tour-go .emoji { font-size: 1.35em; letter-spacing: 0; }
+.tour-go .ico { width: 1.6em; height: 1.6em; transition: transform .5s var(--ease); }
+.tour-go:hover .ico, .tour-go:focus-visible .ico { transform: translateX(5px); }
+.tour-go:focus-visible { outline: 1px solid var(--orange); outline-offset: 6px; }
+
+/* progress along the top of a piece while touring */
+.tourbar { display: flex; gap: 6px; margin-bottom: 18px; }
+.tourbar span { flex: 1; height: 2px; background: var(--scr-line); transition: background .6s; }
+.tourbar span.is-done { background: var(--orange); }
+
+/* ---------- the landing ---------- */
+.view--landing { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: safe center; gap: 12px; padding: 20px 28px 32px; text-align: center; }
+.landing-emoji { font-size: 3rem; line-height: 1; animation: touch-down 1.3s var(--ease) both; }
+@keyframes touch-down { from { opacity: 0; transform: translate(-80px, -56px) rotate(-12deg); } to { opacity: 1; transform: none; } }
+.landing-title { margin: 0; font: 300 clamp(2.2rem, 5vw, 3.8rem)/1.05 var(--display); letter-spacing: -.03em; }
+.landing-time { margin: 4px 0 0; font: 600 .66rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--orange-text); }
+#screen-seat[data-night="true"] .landing-time { color: #FFB27A; }
+.landing-line { margin: 0; max-width: 30ch; font: 300 1.2rem/1.4 var(--display); color: var(--scr-soft); }
+.landing-stamp { margin: 8px 0 2px; }
+.landing-stamp .stamp { width: 150px; }
+.landing-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.landing-actions .emoji { margin-left: 4px; }
+
+@media (max-width: 760px), (max-aspect-ratio: 4/5) {
+  .pp-book { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pp-slot { aspect-ratio: 1; }
+  .tour-row { grid-template-columns: 3ch minmax(0, 1fr); }
+  .tour-kind, .tour-row .tag { grid-column: 2; }
+  .tour-title { grid-column: 2; grid-row: 1; }
+  .tour-n { grid-row: 1; }
+  .landing-title { font-size: 2.4rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stamp.is-fresh, .landing-emoji { animation: none; }
+  .stampnote { animation: none; opacity: 1; }
+}

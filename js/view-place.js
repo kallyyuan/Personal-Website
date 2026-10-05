@@ -44,6 +44,9 @@
       h('section', { class: 'city-col' }, h('h2', null, 'Writing'), h('div', { class: 'wrows' }, (p.writing || []).map(writing))));
 
     const root = h('div', { class: 'view view--city' }, hero, body);
+    if (KY.passport && KY.passport.stamp(p.id)) {
+      hero.append(h('a', { class: 'stampnote', href: KY.href.passport, role: 'status' }, h('span', { class: 'emoji', 'aria-hidden': 'true' }, site.ui.passportEmoji), 'Passport stamped'));
+    }
 
     /* put the city in the crop: centred on wide screens, tucked to the right on phones so the title has room */
     const z = 4.4;
