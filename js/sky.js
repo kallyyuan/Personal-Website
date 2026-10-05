@@ -1,54 +1,56 @@
 /* ==========================================================================
-   Sky: soft clouds drifting behind every screen.
-   Each row is [cloud shape, left %, top %, width in vw]. Shapes: a, b, c, d.
+   The window: a painted sky that follows the visitor's time of day.
+   Dawn 5 to 8, day 8 to 17, dusk 17 to 20, night after that.
+   To preview one, add ?time=night (or dawn, day, dusk) to the address.
    ========================================================================== */
 (function () {
   const KY = window.KY;
-  const VIEW = { a: '0 0 400 200', b: '0 0 300 220', c: '0 0 230 130', d: '0 0 500 160' };
-
-  const LAYERS = [
-    { name: 'far', parallax: 0.35, opacity: 0.8, clouds: [
-      ['c', -4, 9, 13], ['d', 16, 3, 20], ['c', 42, 13, 11], ['d', 60, 5, 21], ['c', 82, 17, 13],
-      ['b', 28, 33, 8], ['c', 72, 40, 10], ['d', 4, 45, 15], ['c', 104, 24, 12], ['d', 96, 8, 19],
-    ] },
-    { name: 'mid', parallax: 0.7, opacity: 0.95, clouds: [
-      ['a', -8, 30, 23], ['d', 34, 25, 21], ['b', 69, 27, 15], ['c', 52, 47, 13], ['a', 86, 50, 19],
-      ['d', 6, 62, 19], ['b', 104, 38, 15], ['a', 112, 58, 18],
-    ] },
-    { name: 'near', parallax: 1.1, opacity: 1, clouds: [
-      ['a', -10, 76, 34], ['b', 20, 81, 22], ['d', 42, 85, 38], ['a', 68, 78, 34], ['b', 90, 84, 22],
-      ['a', 108, 72, 32], ['d', -14, 50, 26], ['d', 112, 90, 30],
-    ] },
-  ];
-
   const root = document.getElementById('sky');
-  let seed = 7;
-  const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const BASE = 'assets/watercolor/';
+  const KINDS = ['dawn', 'day', 'dusk', 'night'];
 
-  root.append(KY.h('div', { class: 'sky-rainbow' }));
+  const timeOfDay = (d) => {
+    const hr = d.getHours();
+    return hr >= 5 && hr < 8 ? 'dawn' : hr >= 8 && hr < 17 ? 'day' : hr >= 17 && hr < 20 ? 'dusk' : 'night';
+  };
+  const forced = new URLSearchParams(location.search).get('time');
+  const override = KINDS.includes(forced) ? forced : null;
 
-  LAYERS.forEach((L) => {
-    const layer = KY.h('div', { class: 'cloud-layer cloud-layer--' + L.name, style: { '--parallax': L.parallax, opacity: L.opacity } });
-    L.clouds.forEach(([v, left, top, w], i) => {
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('viewBox', VIEW[v]);
-      svg.setAttribute('class', 'cloud');
-      svg.style.left = left + '%';
-      svg.style.top = top + '%';
-      svg.style.width = w + 'vw';
-      svg.style.setProperty('--dur', (80 + rand() * 90).toFixed(0) + 's');
-      svg.style.setProperty('--delay', (-rand() * 60).toFixed(0) + 's');
-      if (i % 2) svg.style.animationDirection = 'alternate-reverse';
-      const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-      use.setAttribute('href', '#cloud-' + v);
-      svg.append(use);
-      layer.append(svg);
-    });
-    root.append(layer);
+  let current = null;
+  function set(kind) {
+    if (kind === current) return;
+    current = kind;
+    document.body.dataset.time = kind;
+    const img = new Image();
+    img.className = 'sky-wash';
+    img.alt = '';
+    img.decoding = 'async';
+    img.src = BASE + 'sky-' + kind + '.webp';
+    const show = () => {
+      const old = Array.from(root.querySelectorAll('.sky-wash'));
+      root.prepend(img);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        img.classList.add('is-in');
+        old.forEach((o) => { o.classList.remove('is-in'); setTimeout(() => o.remove(), 2600); });
+      }));
+    };
+    if (img.complete) show(); else { img.onload = show; img.onerror = show; }
+  }
+
+  ['a', 'b'].forEach((v) => {
+    const m = new Image();
+    m.className = 'sky-mist' + (v === 'b' ? ' sky-mist--b' : '');
+    m.alt = ''; m.decoding = 'async'; m.src = BASE + 'mist.webp';
+    root.append(m);
   });
 
-  /* Each screen nudges the clouds sideways, so moving through the site feels like flying. */
+  set(override || timeOfDay(new Date()));
+  if (!override) setInterval(() => set(timeOfDay(new Date())), 5 * 60 * 1000);
+
   KY.sky = {
+    kind: () => current,
+    setTime: set,
+    /* each screen nudges the mist sideways, so moving through the site feels like flying */
     setShift(n) { root.style.setProperty('--route-shift', n); },
   };
 })();

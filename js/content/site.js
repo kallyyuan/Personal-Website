@@ -5,25 +5,23 @@
    Edit only the text between the quotes. Keep the commas and quote marks.
    ========================================================================== */
 
-window.KALLY = window.KALLY || { places: [] };
+window.KALLY = window.KALLY || {};
 
 KALLY.site = {
   name: 'Kally Yuan',
   role: 'Creative Strategist and Copywriter',
 
-  /* Screen 1: the boarding gate */
+  /* The opening page */
   gate: {
-    eyebrow: 'Now boarding',
     headline: 'I believe meeting people is a journey.',
-    /* the word in the headline that gets the soft italic treatment */
-    accentWord: 'journey',
+    accentWord: 'journey',      /* gets the italic and the blue */
+    seal: '遇',                  /* the small stamp: 遇 means "to meet". Another option: 缘 */
   },
 
-  /* The boarding pass. Add or remove rows; each row is [label, value]. */
+  /* The boarding pass. Each row is [label, value]. */
   pass: {
     airline: 'Kally Air',
     flight: 'KY 2027',
-    route: ['Anywhere', "Kally's World"],
     fields: [
       ['Passenger', 'Valued Guest'],
       ['Destination', "Kally's World"],
@@ -33,47 +31,49 @@ KALLY.site = {
     ],
     stubFields: [
       ['Passenger', 'Valued Guest'],
-      ['Seat', '1A'],
       ['Gate', 'Now Boarding'],
+    ],
+    stubSeat: '1A',
+  },
+
+  /* The seatback menu, in order. Maps is the large one. */
+  hub: {
+    tiles: [
+      { id: 'maps', label: 'Maps' },
+      { id: 'work', label: 'Work' },
+      { id: 'writing', label: 'Writing' },
+      { id: 'music', label: 'Music' },
+      { id: 'play', label: 'Play' },
     ],
   },
 
-  /* Screen 2: the map */
-  map: {
-    title: 'Where to?',
-    departures: 'Departures',
+  /* Section groups: [id used in the content files, label shown] */
+  groups: {
+    work: [['copy', 'Copy'], ['strategy', 'Strategy'], ['research', 'Research']],
+    writing: [['personal', 'Personal'], ['academic', 'Academic']],
+    places: [['based', 'Where I am based'], ['been', 'Where I have been']],
   },
 
-  /* Screen 3: the seatback menu. Order here is the order on screen. */
-  categories: [
-    { id: 'snacks', label: 'Snacks', icon: 'snacks', unit: ['piece', 'pieces'] },
-    { id: 'movies', label: 'Movies', icon: 'movies', unit: ['piece', 'pieces'] },
-    { id: 'music', label: 'Music', icon: 'music', unit: ['piece', 'pieces'] },
-    { id: 'games', label: 'Games', icon: 'games', unit: ['game', 'games'] },
-  ],
-
-  /* Section titles inside the Music drawer */
-  musicGroups: {
-    song: 'Playlist',
-    photos: 'Photography series',
-    essay: 'Personal essays',
+  /* The short haul: a two minute tour. List piece ids in the order you want them shown.
+     Find an id in the content files, for example 'work-copy-1' or 'sh-photos-1'. */
+  tour: {
+    label: 'Short haul',
+    minutes: 2,
+    ids: ['work-copy-1', 'work-strategy-1', 'work-research-1', 'writing-personal-1', 'sh-photos-1'],
   },
 
-  /* Screen 4 and navigation labels */
   ui: {
     menu: 'Menu',
-    map: 'Map',
+    back: 'Back',
     backToMenu: 'Back to the menu',
     backToMap: 'Back to the map',
-    backToWork: 'Back to the work index',
     previous: 'Previous',
     next: 'Next',
     context: 'What it was for',
     shows: 'What this shows',
-    workTitle: 'Work index',
-    allTracks: 'All',
-    allPlaces: 'All places',
-    flyTo: 'Fly to',
+    passport: 'Passport',
+    sound: 'Sound',
+    readingLight: 'Reading light',
     seat: 'Seat 1A',
   },
 

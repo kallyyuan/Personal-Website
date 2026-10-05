@@ -20,7 +20,7 @@
   dlg.append(h('div', { class: 'cap-tag' },
     h('span', { class: 'cap-hole', 'aria-hidden': 'true' }),
     closeBtn,
-    h('p', { class: 'eyebrow' }, c.title),
+    h('p', { class: 'cap-eyebrow' }, c.title),
     h('h2', { id: 'captain-title', class: 'cap-name' }, c.name),
     h('ul', { class: 'cap-lines' }, c.lines.map((l) => h('li', null, l))),
     h('p', { class: 'cap-goal' }, c.goal),

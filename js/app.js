@@ -1,25 +1,31 @@
 /* ==========================================================================
    App: routing and the transitions between screens.
    Addresses (what you see after the # in the link):
-     #/            boarding gate
-     #/map         world map
-     #/place/la    seatback menu for a stop   (place id from its content file)
-     #/place/la/snacks   a category drawer
-     #/piece/la-snack-1  one piece of work
-     #/work        the work index, for recruiters (share this link)
+     #/             the opening page
+     #/menu         the seatback menu
+     #/work         Work (copy, strategy, research). Share this one with recruiters.
+     #/writing      Writing
+     #/maps         Maps
+     #/place/la     one city (place id from its content file)
+     #/music        Music
+     #/play         Play
+     #/passport     Passport
+     #/tour         the short haul
+     #/piece/ID     one piece of work
    ========================================================================== */
 (function () {
   const KY = window.KY;
   const D = KY.data;
   const $ = (s, r) => (r || document).querySelector(s);
 
-  const NAMES = ['gate', 'map', 'seat', 'piece', 'work'];
-  const SHIFT = { gate: 0, map: -3, seat: -6, piece: -9, work: -12 };
+  const NAMES = ['gate', 'seat', 'piece'];
+  const SHIFT = { gate: 0, seat: -3, piece: -6 };
+  const SEAT_VIEWS = ['work', 'writing', 'maps', 'music', 'play', 'passport', 'tour'];
 
   NAMES.forEach((n) => { KY.screens[n] = KY.screens[n] || {}; KY.screens[n].el = $('#screen-' + n); });
 
   let current = null;       // name of the screen on show
-  let pendingOpts = null;   // extra info passed along with the next navigation
+  let pendingOpts = null;   // extra information passed with the next navigation
 
   /* ---------- routing ---------- */
   function parse(hash) {
@@ -28,25 +34,18 @@
     const parts = path.split('/').filter(Boolean);
     const q = new URLSearchParams(query);
     if (!parts.length) return { name: 'gate', q };
-    switch (parts[0]) {
-      case 'map': return { name: 'map', q };
-      case 'work':
-      case 'index': return { name: 'work', q };
-      case 'place': {
-        if (!D.placeById[parts[1]]) break;
-        const cat = parts[2] && D.catById[parts[2]] ? parts[2] : null;
-        return { name: 'seat', placeId: parts[1], cat, q };
-      }
-      case 'piece':
-        if (D.itemById[parts[1]]) return { name: 'piece', itemId: parts[1], q };
-        break;
-    }
-    return { name: 'map', q };
+    const head = parts[0];
+    if (head === 'menu') return { name: 'seat', view: 'menu', q };
+    if (head === 'index') return { name: 'seat', view: 'work', q };
+    if (SEAT_VIEWS.includes(head)) return { name: 'seat', view: head, q };
+    if (head === 'place' && D.placeById[parts[1]]) return { name: 'seat', view: 'place', placeId: parts[1], q };
+    if (head === 'piece' && D.itemById[parts[1]] && KY.screens.piece.enter) return { name: 'piece', itemId: parts[1], q };
+    return { name: 'seat', view: 'menu', q };
   }
 
   KY.go = function (hash, opts) {
-    if (location.hash === hash) { pendingOpts = opts || null; route(); return; }
     pendingOpts = opts || null;
+    if (location.hash === hash) { route(); return; }
     location.hash = hash;
   };
 
@@ -55,9 +54,7 @@
 
   function pick(from, to, opts) {
     if (!from) return 'intro';
-    if (from === 'gate' && to === 'map' && opts.via === 'tear') return 'tear';
-    if (from === 'map' && to === 'seat') return 'irisIn';
-    if (from === 'seat' && to === 'map') return 'irisOut';
+    if (from === 'gate' && to === 'seat' && opts.via === 'tear') return 'tear';
     if (to === 'piece') return 'rise';
     if (from === 'piece') return 'sink';
     return 'fade';
@@ -65,61 +62,34 @@
 
   const T = {
     intro(f, t) {
-      return KY.animate(t, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 900 }).finished;
+      return KY.animate(t, [{ opacity: 0 }, { opacity: 1 }], { duration: 1200 }).finished;
     },
     fade(f, t) {
       f.style.zIndex = 11; t.style.zIndex = 12;
       return Promise.all([
-        KY.animate(t, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 750 }).finished,
+        KY.animate(t, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 800 }).finished,
         KY.animate(f, [{ opacity: 1 }, { opacity: 0 }], { duration: 600 }).finished,
       ]);
     },
     tear(f, t) {
       f.style.zIndex = 12; t.style.zIndex = 11;
       return Promise.all([
-        KY.animate(f, [{ opacity: 1 }, { opacity: 0 }], { duration: 1000, delay: 500, easing: EASE_SOFT }).finished,
-        KY.animate(t, [{ opacity: 0, transform: 'scale(1.06)' }, { opacity: 1, transform: 'none' }], { duration: 1500, delay: 250 }).finished,
+        KY.animate(f, [{ opacity: 1 }, { opacity: 0 }], { duration: 1200, delay: 500, easing: EASE_SOFT }).finished,
+        KY.animate(t, [{ opacity: 0, transform: 'scale(1.015)' }, { opacity: 1, transform: 'none' }], { duration: 1500, delay: 700 }).finished,
       ]);
-    },
-    irisIn(f, t, ctx) {
-      /* the zoom carries the lighthouse to the middle of the screen, so the light opens from there */
-      const o = (ctx.opts && ctx.opts.origin) || { x: innerWidth / 2, y: innerHeight / 2 };
-      const c = { x: innerWidth / 2, y: innerHeight / 2 };
-      const R = Math.hypot(c.x, c.y) + 60;
-      f.style.zIndex = 11; t.style.zIndex = 12;
-      const zoom = KY.screens.map.zoom ? KY.screens.map.zoom(o, 'in') : Promise.resolve();
-      const reveal = KY.animate(
-        t,
-        [{ clipPath: `circle(0px at ${c.x}px ${c.y}px)` }, { clipPath: `circle(${R}px at ${c.x}px ${c.y}px)` }],
-        { duration: 1000, delay: 650, easing: 'cubic-bezier(.65, 0, .25, 1)' }
-      ).finished;
-      return Promise.all([zoom, reveal]);
-    },
-    irisOut(f, t, ctx) {
-      const o = (KY.screens.map.originOf && KY.screens.map.originOf(ctx.fromPlace)) || { x: innerWidth / 2, y: innerHeight / 2 };
-      const c = { x: innerWidth / 2, y: innerHeight / 2 };
-      const R = Math.hypot(c.x, c.y) + 60;
-      f.style.zIndex = 12; t.style.zIndex = 11;
-      const zoom = KY.screens.map.zoom ? KY.screens.map.zoom(o, 'out') : Promise.resolve();
-      const hide = KY.animate(
-        f,
-        [{ clipPath: `circle(${R}px at ${c.x}px ${c.y}px)` }, { clipPath: `circle(0px at ${c.x}px ${c.y}px)` }],
-        { duration: 1000, easing: 'cubic-bezier(.65, 0, .25, 1)' }
-      ).finished;
-      return Promise.all([zoom, hide]);
     },
     rise(f, t) {
       f.style.zIndex = 11; t.style.zIndex = 12;
       return Promise.all([
-        KY.animate(t, [{ opacity: 0, transform: 'translateY(40px) scale(.985)' }, { opacity: 1, transform: 'none' }], { duration: 700 }).finished,
-        KY.animate(f, [{ opacity: 1 }, { opacity: 0 }], { duration: 520 }).finished,
+        KY.animate(t, [{ opacity: 0, transform: 'translateY(34px)' }, { opacity: 1, transform: 'none' }], { duration: 800 }).finished,
+        KY.animate(f, [{ opacity: 1 }, { opacity: 0 }], { duration: 560 }).finished,
       ]);
     },
     sink(f, t) {
       f.style.zIndex = 12; t.style.zIndex = 11;
       return Promise.all([
-        KY.animate(t, [{ opacity: 0, transform: 'scale(1.025)' }, { opacity: 1, transform: 'none' }], { duration: 700 }).finished,
-        KY.animate(f, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(28px) scale(.99)' }], { duration: 520 }).finished,
+        KY.animate(t, [{ opacity: 0 }, { opacity: 1 }], { duration: 800 }).finished,
+        KY.animate(f, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(24px)' }], { duration: 560 }).finished,
       ]);
     },
   };
@@ -152,17 +122,17 @@
     const S = KY.screens[to];
     const from = current;
     const fromS = from && KY.screens[from];
-    const ctx = { from, to, opts, fromPlace: from === 'seat' && fromS.placeId ? fromS.placeId : null };
+    const ctx = { from, to, opts };
 
     document.body.dataset.screen = to;
     KY.sky.setShift(SHIFT[to]);
     const skip = $('#hud-skip');
-    if (to === 'work') skip.setAttribute('aria-current', 'page'); else skip.removeAttribute('aria-current');
+    if (to === 'seat' && r.view === 'work') skip.setAttribute('aria-current', 'page'); else skip.removeAttribute('aria-current');
 
     S.enter(r, Object.assign({ same: from === to }, ctx));
     document.title = (S.title ? S.title(r) + ' | ' : '') + 'Kally Yuan';
 
-    if (from === to) { focusScreen(S); return; }
+    if (from === to) { focusScreen(S, r); return; }
 
     S.el.hidden = false;
     S.el.scrollTop = 0;
@@ -181,14 +151,14 @@
       if (fromS.leave) fromS.leave();
     }
     resetScreen(S.el);
-    focusScreen(S);
+    focusScreen(S, r);
   }
 
-  function focusScreen(S) {
+  function focusScreen(S, r) {
     const target = S.el.querySelector('[data-focus]') || S.el;
     target.setAttribute('tabindex', '-1');
     try { target.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
-    const label = (S.title && S.title(parse(location.hash))) || '';
+    const label = (S.title && S.title(r)) || '';
     if (label) KY.announce(label);
   }
 

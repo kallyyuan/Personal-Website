@@ -5,77 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Kally Yuan | Creative Strategist and Copywriter</title>
   <meta name="description" content="Kally Yuan is a USC Annenberg senior applying for entry level Creative Strategist and Copywriter roles at New York agencies. Take a flight through her work.">
-  <meta name="theme-color" content="#cfe8fb">
+  <meta name="theme-color" content="#E7EAF2">
   <meta property="og:title" content="Kally Yuan | Now boarding">
-  <meta property="og:description" content="I believe meeting people is a journey. Take a flight through the work of Kally Yuan, Creative Strategist and Copywriter.">
+  <meta property="og:description" content="I believe meeting people is a journey. A flight through the work of Kally Yuan, Creative Strategist and Copywriter.">
   <meta property="og:type" content="website">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="assets/fonts/dm-serif-display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/dm-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/gate.css">
-  <link rel="stylesheet" href="css/map.css">
   <link rel="stylesheet" href="css/seat.css">
-  <link rel="stylesheet" href="css/piece.css">
-  <link rel="stylesheet" href="css/puzzle.css">
 </head>
-<body data-screen="gate">
+<body data-screen="gate" data-time="day">
   <a class="skip-main" href="#main">Skip to main content</a>
 
-  <!-- Shared drawing library: clouds and icons. Nothing to edit here. -->
+  <!-- Drawing library: fine line icons and the rough stamp filter. Nothing to edit. -->
   <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
-    <defs>
-      <g id="cloud-a-shapes"><circle cx="70" cy="140" r="38"/><circle cx="132" cy="108" r="56"/><circle cx="208" cy="84" r="72"/><circle cx="284" cy="108" r="58"/><circle cx="338" cy="138" r="40"/><rect x="40" y="128" width="330" height="54" rx="27"/></g>
-      <g id="cloud-b-shapes"><circle cx="82" cy="152" r="44"/><circle cx="142" cy="112" r="60"/><circle cx="152" cy="68" r="46"/><circle cx="212" cy="130" r="52"/><circle cx="252" cy="162" r="36"/><rect x="40" y="148" width="240" height="52" rx="26"/></g>
-      <g id="cloud-c-shapes"><circle cx="62" cy="82" r="32"/><circle cx="106" cy="60" r="44"/><circle cx="152" cy="80" r="34"/><rect x="28" y="76" width="172" height="36" rx="18"/></g>
-      <g id="cloud-d-shapes"><circle cx="92" cy="94" r="36"/><circle cx="162" cy="72" r="48"/><circle cx="242" cy="86" r="42"/><circle cx="322" cy="66" r="50"/><circle cx="402" cy="88" r="40"/><rect x="52" y="90" width="400" height="38" rx="19"/></g>
-    </defs>
-    <symbol id="cloud-a" viewBox="0 0 400 200"><use href="#cloud-a-shapes" fill="#c9e0f6" transform="translate(0 14)"/><use href="#cloud-a-shapes" fill="#fff"/></symbol>
-    <symbol id="cloud-b" viewBox="0 0 300 220"><use href="#cloud-b-shapes" fill="#c9e0f6" transform="translate(0 14)"/><use href="#cloud-b-shapes" fill="#fff"/></symbol>
-    <symbol id="cloud-c" viewBox="0 0 230 130"><use href="#cloud-c-shapes" fill="#c9e0f6" transform="translate(0 10)"/><use href="#cloud-c-shapes" fill="#fff"/></symbol>
-    <symbol id="cloud-d" viewBox="0 0 500 160"><use href="#cloud-d-shapes" fill="#c9e0f6" transform="translate(0 12)"/><use href="#cloud-d-shapes" fill="#fff"/></symbol>
-
+    <filter id="rough-ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.8"/>
+    </filter>
     <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
     <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
-    <symbol id="i-arrow-long" viewBox="0 0 24 24"><path d="M4 12h16m-6-6l6 6-6 6"/></symbol>
+    <symbol id="i-arrow-long" viewBox="0 0 24 24"><path d="M3 12h18m-5-5l5 5-5 5"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
-    <symbol id="i-plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 00-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></symbol>
-    <symbol id="i-snacks" viewBox="0 0 24 24"><path d="M7 7h10l-1.2 13H8.2L7 7z"/><path d="M6 7l1.2-3h9.6L18 7"/><path d="M12 11l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 13.1l2-.3z"/></symbol>
-    <symbol id="i-movies" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="12" rx="2"/><path d="M3.5 8l2.5-4 4 .6L7.5 8M11 8l2.5-4 4 .6L15 8"/><path d="M10.5 11.5l4.5 2.5-4.5 2.5z"/></symbol>
-    <symbol id="i-music" viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0116 0v3"/><rect x="3.5" y="14.5" width="4" height="6" rx="1.5"/><rect x="16.5" y="14.5" width="4" height="6" rx="1.5"/></symbol>
-    <symbol id="i-games" viewBox="0 0 24 24"><path d="M8 7h8a5 5 0 015 5v2.5a2.8 2.8 0 01-4.9 1.8L14.5 15h-5l-1.6 1.3A2.8 2.8 0 013 14.5V12a5 5 0 015-5z"/><path d="M8.2 10v3.6M6.4 11.8H10"/><path d="M15.6 11.2h.01M17.6 12.8h.01"/></symbol>
-    <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.2 8.2L20 19M8.2 15.8L20 5"/></symbol>
     <symbol id="i-tag" viewBox="0 0 24 24"><path d="M4 12l8-8h8v8l-8 8z"/><path d="M15.5 8.5h.01"/></symbol>
-    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
-    <symbol id="i-grid" viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></symbol>
-    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
-    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
-    <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></symbol>
-    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
-    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></symbol>
+    <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.2 8.2L20 19M8.2 15.8L20 5"/></symbol>
+    <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M15.5 9a4.2 4.2 0 010 6M18 6.8a7.6 7.6 0 010 10.4"/></symbol>
+    <symbol id="i-speaker-off" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+    <symbol id="i-light" viewBox="0 0 24 24"><path d="M9 17.5h6M10 20.5h4"/><path d="M12 3.5a6 6 0 00-3.4 10.9c.6.5.9 1.2.9 2v.6h5v-.6c0-.8.3-1.5.9-2A6 6 0 0012 3.5z"/></symbol>
+    <symbol id="i-belt" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="2.3"/><path d="M7.5 20v-6.5c0-2.2 1.9-3.8 4.5-3.8s4.5 1.6 4.5 3.8V20M7.5 12.6l9 5.2"/></symbol>
   </svg>
 
-  <!-- Sky: soft clouds that drift behind every screen. Built by js/sky.js -->
+  <!-- The window: a painted sky that follows the time of day. Built by js/sky.js -->
   <div class="sky" id="sky" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
 
   <header class="hud" id="hud">
-    <a class="hud-brand" href="#/map" id="hud-brand" aria-label="Kally Yuan, back to the map">Kally Yuan</a>
-    <a class="hud-skip" href="#/work" id="hud-skip">
-      <span class="hud-skip-text">Short on time? Skip to the work index</span>
+    <a class="hud-brand" href="#/menu" id="hud-brand" aria-label="Kally Yuan, back to the menu">Kally Yuan</a>
+    <a class="hud-link hud-skip" href="#/work" id="hud-skip">
+      <span>Short on time? Skip to the work index</span>
       <svg class="ico" aria-hidden="true"><use href="#i-arrow-long"/></svg>
     </a>
-    <button class="hud-captain" id="hud-captain" type="button" aria-haspopup="dialog">
-      <svg class="ico" aria-hidden="true"><use href="#i-tag"/></svg>
-      <span>Your captain</span>
-    </button>
+    <div class="hud-right">
+      <button class="hud-link hud-sound" id="hud-sound" type="button" aria-pressed="false">
+        <svg class="ico" aria-hidden="true"><use href="#i-speaker-off"/></svg>
+        <span>Sound</span>
+      </button>
+      <button class="hud-link hud-captain" id="hud-captain" type="button" aria-haspopup="dialog">
+        <span>Your captain</span>
+      </button>
+    </div>
   </header>
 
   <main id="main" tabindex="-1">
     <section class="screen" id="screen-gate" data-screen="gate" aria-labelledby="gate-title" hidden></section>
-    <section class="screen" id="screen-map" data-screen="map" aria-labelledby="map-title" hidden></section>
     <section class="screen" id="screen-seat" data-screen="seat" aria-labelledby="seat-title" hidden></section>
     <section class="screen" id="screen-piece" data-screen="piece" aria-labelledby="piece-title" hidden></section>
-    <section class="screen" id="screen-work" data-screen="work" aria-labelledby="work-title" hidden></section>
   </main>
 
   <dialog class="captain-dialog" id="captain-dialog" aria-labelledby="captain-title"></dialog>
@@ -89,6 +75,10 @@
   </noscript>
 
   <script defer src="js/content/site.js"></script>
+  <script defer src="js/content/work.js"></script>
+  <script defer src="js/content/writing.js"></script>
+  <script defer src="js/content/music.js"></script>
+  <script defer src="js/content/play.js"></script>
   <script defer src="js/content/places/los-angeles.js"></script>
   <script defer src="js/content/places/new-york.js"></script>
   <script defer src="js/content/places/shanghai.js"></script>
@@ -97,13 +87,9 @@
   <script defer src="js/world-data.js"></script>
   <script defer src="js/ui.js"></script>
   <script defer src="js/sky.js"></script>
-  <script defer src="js/motifs.js"></script>
-  <script defer src="js/puzzle.js"></script>
+  <script defer src="js/audio.js"></script>
   <script defer src="js/gate.js"></script>
-  <script defer src="js/map.js"></script>
   <script defer src="js/seat.js"></script>
-  <script defer src="js/piece.js"></script>
-  <script defer src="js/work.js"></script>
   <script defer src="js/captain.js"></script>
   <script defer src="js/app.js"></script>
 </body>

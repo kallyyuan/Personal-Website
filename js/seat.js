@@ -1,144 +1,204 @@
 /* ==========================================================================
-   Screen 3: the seatback entertainment screen.
-   One screen for every stop. It shows the menu (Snacks, Movies, Music, Games)
-   or one category's drawer. The skyline and colors come from the stop's theme.
+   Screen 2: the seatback. One frame holds the menu and, in time, every
+   section (Work, Writing, Maps, Music, Play).
+   Details: seat belt sign, reading light (night palette), volume button.
    ========================================================================== */
 (function () {
   const KY = window.KY;
   const h = KY.h;
   const D = KY.data;
+  const site = D.site;
   const el = document.getElementById('screen-seat');
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = window.KALLY_WORLD;
 
-  let place = null, bar, view, timeEl, placeEl, backBtn, clock = 0;
+  let viewEl, backEl, brandEl, timeEl, footEl, bootEl, beltEl, lightBtn, clock = 0, beltTimer = 0;
+  const based = D.places.find((p) => p.group === 'based') || D.places[0];
+  const NIGHT_KEY = 'ky-night';
 
-  function timeIn(tz) {
-    try { return new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', timeZone: tz }).format(new Date()); } catch (e) { return ''; }
+  /* ---------- map projection (same as the shape file) ---------- */
+  const rad = Math.PI / 180;
+  const my = (lat) => 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * lat * rad));
+  const px = (lon) => ((lon + 180) / 360) * W.w;
+  const py = (lat) => (W.yTop - my(lat)) * W.k;
+
+  /* ---------- fine line art for the tiles ---------- */
+  const ART = {
+    work: `<svg viewBox="0 0 120 90" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M14 10V76H112"/><path d="M14 58H112M14 42H112M14 26H112" stroke-dasharray="1 3.5" opacity=".55"/>
+        <path d="M14 64L34 54L52 60L72 34L92 42L112 18"/>
+        <circle cx="34" cy="54" r="2" class="pt"/><circle cx="52" cy="60" r="2" class="pt"/><circle cx="72" cy="34" r="2" class="pt"/><circle cx="92" cy="42" r="2" class="pt"/>
+        <circle cx="112" cy="18" r="3" fill="#E07B39" stroke="none"/></g></svg>`,
+    writing: `<svg viewBox="0 0 120 90" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round">
+        <path d="M60 6C70 24 80 40 80 54C80 65 72 73 60 84C48 73 40 65 40 54C40 40 50 24 60 6Z"/>
+        <path d="M60 38V80"/><circle cx="60" cy="38" r="3.4"/><path d="M45 56H75" opacity=".55"/></g>
+        <circle cx="60" cy="38" r="1.4" fill="#E07B39"/></svg>`,
+    music: `<svg viewBox="0 0 120 90" aria-hidden="true"><defs><clipPath id="sleeve-cut"><path clip-rule="evenodd" d="M0 0H120V90H0Z M10 14H72V76H10Z"/></clipPath></defs>
+        <g fill="none" stroke="currentColor" stroke-width="1">
+        <g clip-path="url(#sleeve-cut)"><circle cx="76" cy="45" r="33"/><circle cx="76" cy="45" r="29" opacity=".5"/><circle cx="76" cy="45" r="25" opacity=".5"/><circle cx="76" cy="45" r="21" opacity=".5"/><circle cx="76" cy="45" r="9"/></g>
+        <rect x="10" y="14" width="62" height="62"/><path d="M10 62L72 62" opacity=".55"/></g>
+        <circle cx="76" cy="45" r="1.8" fill="#E07B39"/></svg>`,
+    play: `<svg viewBox="0 0 120 90" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"
+        d="M35 17C45 17 60 22 55 12C50 2 70 2 65 12C60 22 75 17 85 17C85 27 80 42 90 37C100 32 100 52 90 47C80 42 85 57 85 67C75 67 60 62 65 72C70 82 50 82 55 72C60 62 45 67 35 67C35 57 40 42 30 47C20 52 20 32 30 37C40 42 35 27 35 17Z"/>
+        <circle cx="60" cy="42" r="1.8" fill="#E07B39"/></svg>`,
+  };
+
+  function miniMap() {
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${W.w} ${W.h}`);
+    svg.setAttribute('class', 'mini-svg');
+    svg.setAttribute('aria-hidden', 'true');
+    let grat = '';
+    for (let lon = -150; lon <= 150; lon += 30) grat += `M${px(lon).toFixed(1)} 0V${W.h}`;
+    [-30, 0, 30, 60].forEach((lat) => { grat += `M0 ${py(lat).toFixed(1)}H${W.w}`; });
+    const dots = D.places.map((p, i) => {
+      const x = px(p.lon).toFixed(1), y = py(p.lat).toFixed(1), r = p.group === 'based' ? 6.4 : 4.2;
+      return `<g class="dot" style="--d:${(-i * 0.8).toFixed(1)}s"><circle class="dot-ring" cx="${x}" cy="${y}" r="${r}"/><circle cx="${x}" cy="${y}" r="${r}" fill="#E07B39"/></g>`;
+    }).join('');
+    svg.innerHTML = `<path d="${grat}" fill="none" stroke="currentColor" stroke-width=".5" stroke-dasharray="1 5" opacity=".35"/>
+      <path d="${W.path}" fill="none" stroke="currentColor" stroke-width=".6" stroke-linejoin="round" opacity=".75" vector-effect="non-scaling-stroke"/>${dots}`;
+    return h('div', { class: 'mini-map', style: { '--aspect': (W.w / W.h).toFixed(4) } },
+      h('img', { class: 'mini-day', src: 'assets/watercolor/map.webp', alt: '', decoding: 'async' }),
+      h('img', { class: 'mini-night', src: 'assets/watercolor/map-night.webp', alt: '', decoding: 'async' }),
+      svg);
   }
-  function tick() { if (place && timeEl) timeEl.textContent = timeIn(place.tz); }
+
+  /* ---------- the menu ---------- */
+  function lines(id) {
+    const c = D.counts;
+    switch (id) {
+      case 'maps': return [['Based', based ? based.name : ''], ['Been', c.maps.been + ' places']];
+      case 'work': return site.groups.work.map(([k, label]) => [label, c.work[k]]);
+      case 'writing': return site.groups.writing.map(([k, label]) => [label, c.writing[k]]);
+      case 'music': return [['Albums', c.music.total]];
+      case 'play': return [['Games', c.play.total]];
+      default: return [];
+    }
+  }
+
+  function renderHub() {
+    const tiles = site.hub.tiles.map((t, i) => {
+      const art = t.id === 'maps' ? miniMap() : h('div', { class: 'tile-art', html: ART[t.id] || '' });
+      return h('a', { class: 'tile tile--' + t.id, href: KY.href.section(t.id), 'data-id': t.id },
+        h('div', { class: 'tile-top' }, h('span', { class: 'tile-n' }, KY.pad2(i + 1)), KY.icon('arrow-long', 'tile-go')),
+        art,
+        h('div', { class: 'tile-bottom' },
+          h('h2', { class: 'tile-label' }, t.label),
+          h('ul', { class: 'tile-lines' }, lines(t.id).map(([k, v]) => h('li', null, h('span', null, k), h('b', null, v))))));
+    });
+    const grid = h('div', { class: 'hub', role: 'group', 'aria-label': 'Menu' }, tiles);
+    grid.addEventListener('keydown', navTiles);
+    return h('div', { class: 'view view--hub' },
+      h('h1', { class: 'sr-only', id: 'seat-title', 'data-focus': '', tabindex: '-1' }, 'Menu'), grid);
+  }
+
+  /* arrow keys move to the nearest tile in that direction */
+  function navTiles(e) {
+    const dirs = { ArrowRight: [1, 0], ArrowLeft: [-1, 0], ArrowDown: [0, 1], ArrowUp: [0, -1] };
+    const d = dirs[e.key];
+    if (!d) return;
+    const tiles = Array.from(e.currentTarget.querySelectorAll('.tile'));
+    const cur = tiles.indexOf(document.activeElement);
+    if (cur < 0) return;
+    const c = (r) => ({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    const from = c(tiles[cur].getBoundingClientRect());
+    let best = null, bestScore = Infinity;
+    tiles.forEach((t, i) => {
+      if (i === cur) return;
+      const p = c(t.getBoundingClientRect());
+      const dx = p.x - from.x, dy = p.y - from.y;
+      const along = dx * d[0] + dy * d[1];
+      if (along <= 4) return;
+      const across = Math.abs(dx * d[1]) + Math.abs(dy * d[0]);
+      const score = along + across * 2 + p.y * 0.001;
+      if (score < bestScore) { bestScore = score; best = t; }
+    });
+    if (best) { e.preventDefault(); best.focus(); }
+  }
+
+  function renderStub(view) {
+    const label = (site.hub.tiles.find((t) => t.id === view) || { label: view[0].toUpperCase() + view.slice(1) }).label;
+    return h('div', { class: 'view view--stub' },
+      h('h1', { class: 'stub-title', id: 'seat-title', 'data-focus': '', tabindex: '-1' }, label),
+      h('p', { class: 'stub-note' }, 'This section is next in the build.'));
+  }
+
+  /* ---------- clock, night, belt ---------- */
+  function tick() {
+    if (!timeEl || !based) return;
+    let t = '';
+    try { t = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', timeZone: based.tz }).format(new Date()); } catch (e) { /* ignore */ }
+    timeEl.textContent = based.name + '  ' + t;
+  }
+  function setNight(on, save) {
+    el.dataset.night = on ? 'true' : 'false';
+    lightBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (save) { try { localStorage.setItem(NIGHT_KEY, on ? 'on' : 'off'); } catch (e) { /* ignore */ } }
+  }
 
   function build() {
-    backBtn = h('a', { class: 'ife-back', href: KY.href.map }, KY.icon('arrow-left'), h('span', null, D.site.ui.map));
-    placeEl = h('span', { class: 'ife-place' });
-    timeEl = h('span', { class: 'ife-time' });
-    bar = h('header', { class: 'ife-bar' }, backBtn,
-      h('div', { class: 'ife-meta' }, placeEl, timeEl, h('span', { class: 'ife-seat' }, D.site.ui.seat)));
-    view = h('div', { class: 'ife-view' });
-    const ife = h('div', { class: 'ife', id: 'ife' }, bar, view);
-    el.append(
-      h('div', { class: 'seat-back' },
-        h('div', { class: 'seat-rest', 'aria-hidden': 'true' }),
-        h('div', { class: 'bezel' }, h('span', { class: 'bezel-cam', 'aria-hidden': 'true' }), ife),
-        h('div', { class: 'seat-jack', 'aria-hidden': 'true' })));
+    const seatNo = site.pass.stubSeat || '1A';
+    beltEl = h('div', { class: 'belt', 'aria-hidden': 'true' }, KY.icon('belt'));
+    lightBtn = h('button', { class: 'reading-light', type: 'button', 'aria-pressed': 'false', 'aria-label': site.ui.readingLight, onclick: () => setNight(el.dataset.night !== 'true', true) }, KY.icon('light'));
+    const top = h('div', { class: 'seat-top' }, beltEl, h('div', { class: 'plaque', 'aria-hidden': 'true' }, seatNo), lightBtn);
 
-    el.addEventListener('keydown', (e) => {
-      if (e.key !== 'Escape' || !place) return;
-      const cat = el._cat;
-      KY.go(cat ? KY.href.place(place.id) : KY.href.map);
-    });
-  }
+    backEl = h('a', { class: 'scr-back', href: KY.href.menu }, KY.icon('arrow-left'), h('span', null, site.ui.menu));
+    brandEl = h('span', { class: 'scr-brand' }, site.pass.airline);
+    timeEl = h('span', { class: 'scr-time' });
+    const bar = h('header', { class: 'scr-bar' }, h('div', { class: 'scr-left' }, backEl, brandEl), timeEl);
+    viewEl = h('div', { class: 'scr-view' });
+    footEl = h('footer', { class: 'scr-foot' },
+      h('a', { class: 'foot-link', href: KY.href.tour }, h('span', null, site.tour.label + ', ' + site.tour.minutes + ' minutes'), KY.icon('arrow-long')),
+      h('a', { class: 'foot-link', href: KY.href.passport }, h('span', null, site.ui.passport)));
+    bootEl = h('div', { class: 'boot', 'aria-hidden': 'true' }, h('span', null, site.pass.airline));
+    const ui = h('div', { class: 'screen-ui' }, bar, viewEl, footEl);
+    const glass = h('div', { class: 'glass' }, ui, h('div', { class: 'glare', 'aria-hidden': 'true' }), bootEl);
 
-  /* ---------- menu ---------- */
-  function renderMenu(p) {
-    const tiles = D.site.categories.map((c) => {
-      const n = (p.categories[c.id] || []).length;
-      return h('a', { class: 'tile', href: KY.href.cat(p.id, c.id), 'data-cat': c.id },
-        h('span', { class: 'tile-icon' }, KY.icon(c.icon)),
-        h('span', { class: 'tile-label' }, c.label),
-        h('span', { class: 'tile-count' }, KY.plural(n, c.unit)));
-    });
-    const grid = h('div', { class: 'tiles', role: 'group', 'aria-label': 'In flight menu' }, tiles);
-    grid.addEventListener('keydown', (e) => navTiles(e, grid));
+    const vol = h('button', { class: 'vol', type: 'button', 'data-sound-toggle': '', 'aria-pressed': 'false', 'aria-label': site.ui.sound }, KY.icon('speaker-off'));
+    const bezel = h('div', { class: 'bezel' },
+      h('span', { class: 'bezel-cam', 'aria-hidden': 'true' }), glass,
+      h('div', { class: 'bezel-foot' }, h('span', { class: 'led', 'aria-hidden': 'true' }), h('span', { class: 'bezel-mark', 'aria-hidden': 'true' }, site.pass.airline), vol));
+    const panel = h('div', { class: 'seat-panel' }, top, bezel, h('div', { class: 'jack', 'aria-hidden': 'true' }));
+    el.append(h('div', { class: 'seat-stage' }, panel));
 
-    return h('div', { class: 'ife-menu' },
-      h('div', { class: 'ife-banner' },
-        h('div', { class: 'ife-banner-text' },
-          h('h1', { class: 'ife-title', id: 'seat-title', 'data-focus': '', tabindex: '-1' }, p.name),
-          h('p', { class: 'ife-sub' }, p.sub)),
-        h('div', { class: 'ife-art', html: KY.motif(p.theme), 'aria-hidden': 'true' })),
-      h('div', { class: 'ife-menu-body' },
-        h('p', { class: 'eyebrow' }, 'In flight menu'),
-        grid));
-  }
-
-  function navTiles(e, grid) {
-    const keys = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 'down', ArrowUp: 'up', Home: 'home', End: 'end' };
-    if (!(e.key in keys)) return;
-    const items = Array.from(grid.querySelectorAll('.tile'));
-    const i = items.indexOf(document.activeElement);
-    if (i < 0) return;
-    const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length || 1;
-    let n = i;
-    const k = keys[e.key];
-    if (k === 1 || k === -1) n = i + k;
-    else if (k === 'down') n = i + cols;
-    else if (k === 'up') n = i - cols;
-    else if (k === 'home') n = 0;
-    else if (k === 'end') n = items.length - 1;
-    if (n >= 0 && n < items.length) { e.preventDefault(); items[n].focus(); }
-  }
-
-  /* ---------- category drawer ---------- */
-  function renderCategory(p, catId) {
-    const cat = D.catById[catId];
-    const list = p.categories[catId] || [];
-    const from = '';
-    let body;
-    if (catId === 'music') {
-      const groups = [['song', D.site.musicGroups.song], ['photos', D.site.musicGroups.photos], ['essay', D.site.musicGroups.essay]];
-      const kindOf = (it) => (it.work.type === 'song' ? 'song' : it.work.type === 'essay' ? 'essay' : 'photos');
-      body = groups.map(([k, label]) => {
-        const items = list.filter((it) => kindOf(it) === k);
-        if (!items.length) return null;
-        return h('section', { class: 'cat-group' }, h('h2', { class: 'cat-group-title' }, label),
-          h('div', { class: 'cat-grid' }, items.map((it) => KY.card(it, { from }))));
-      });
-    } else {
-      body = h('div', { class: 'cat-grid' }, list.map((it) => KY.card(it, { from })));
-    }
-    return h('div', { class: 'ife-cat' },
-      h('div', { class: 'cat-head' },
-        h('span', { class: 'cat-icon' }, KY.icon(cat.icon)),
-        h('h1', { class: 'cat-title', id: 'seat-title', 'data-focus': '', tabindex: '-1' }, cat.label),
-        h('span', { class: 'cat-count' }, KY.plural(list.length, cat.unit))),
-      body);
-  }
-
-  function setPlace(p) {
-    place = p;
-    el.dataset.theme = p.theme;
-    placeEl.textContent = p.name;
+    let night = false;
+    try { night = localStorage.getItem(NIGHT_KEY) === 'on'; } catch (e) { /* ignore */ }
+    setNight(night, false);
     tick();
-    clearInterval(clock);
-    clock = setInterval(tick, 20000);
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && el.dataset.view && el.dataset.view !== 'menu' && !e.defaultPrevented) KY.go(KY.href.menu);
+    });
   }
 
   KY.screens.seat = {
     el,
-    placeId: null,
     init: build,
     title(r) {
-      if (!r || !r.placeId) return 'Seatback menu';
-      const p = D.placeById[r.placeId];
-      return r.cat ? p.name + ', ' + D.catById[r.cat].label : p.name;
+      if (!r || !r.view || r.view === 'menu') return 'Menu';
+      const t = site.hub.tiles.find((x) => x.id === r.view);
+      return t ? t.label : 'Menu';
     },
     enter(r, ctx) {
-      const p = D.placeById[r.placeId];
-      this.placeId = p.id;
-      setPlace(p);
-      el._cat = r.cat;
-      backBtn.setAttribute('href', r.cat ? KY.href.place(p.id) : KY.href.map);
-      backBtn.lastChild.textContent = r.cat ? D.site.ui.menu : D.site.ui.map;
-      const next = r.cat ? renderCategory(p, r.cat) : renderMenu(p);
-      view.replaceChildren(next);
-      view.scrollTop = 0;
-      if (ctx.same) {
-        KY.animate(next, [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }], { duration: 520 });
-      }
+      const view = r.view || 'menu';
+      el.dataset.view = view;
+      el.classList.toggle('is-hub', view === 'menu');
+      const next = view === 'menu' ? renderHub() : renderStub(view);
+      viewEl.replaceChildren(next);
+      viewEl.scrollTop = 0;
+      if (ctx.same) KY.animate(next, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 600 });
+      clearInterval(clock);
+      clock = setInterval(tick, 20000);
+      tick();
     },
     arrive(kind) {
-      if (kind !== 'irisIn') return;
-      const tiles = el.querySelectorAll('.tile, .ife-banner-text');
-      tiles.forEach((t, i) => KY.animate(t, [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }], { duration: 700, delay: 800 + i * 90 }));
+      clearTimeout(beltTimer);
+      beltEl.classList.remove('is-lit');
+      if (kind !== 'tear' || KY.reducedMotion()) return;
+      /* the screen wakes, the belt sign is lit, then goes out with a chime */
+      el.classList.add('is-booting');
+      beltEl.classList.add('is-lit');
+      beltTimer = setTimeout(() => { beltEl.classList.remove('is-lit'); if (KY.audio) KY.audio.chime(); }, 2800);
+      setTimeout(() => el.classList.remove('is-booting'), 3400);
     },
     leave() { clearInterval(clock); },
   };
