@@ -3,13 +3,14 @@
    Change a color here and it changes everywhere.
    ========================================================================== */
 
-@font-face { font-family: 'Jost'; src: url(../assets/fonts/jost.woff2) format('woff2'); font-weight: 300 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Outfit'; src: url(../assets/fonts/outfit.woff2) format('woff2'); font-weight: 200 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Urbanist'; src: url(../assets/fonts/urbanist.woff2) format('woff2'); font-weight: 200 600; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Seal'; src: url(../assets/fonts/seal.woff2) format('woff2'); font-weight: 600; font-display: block; }
 
 :root {
   /* the palette */
   --paper: #E7EAF2;           /* the mist the page is painted on */
-  --paper-base: #ECEFF7;      /* slightly lighter, so the paper grain brings it back to --paper */
+  --paper-base: #E7EAF2;
   --paper-lift: #F4F6FA;
   --stock: #FAFBFD;           /* the boarding pass paper */
   --periwinkle: #9EB1DF;
@@ -31,8 +32,8 @@
   /* ink that sits directly on the window sky (changes at dusk and night) */
   --sky-ink: var(--ink);
 
-  --display: 'Jost', 'Avenir Next', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --sans: 'Jost', 'Avenir Next', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display: 'Outfit', 'Avenir Next', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sans: 'Urbanist', 'Avenir Next', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --hud-h: 64px;
   --ease: cubic-bezier(.22, .8, .24, 1);
@@ -58,12 +59,6 @@ h1, h2, h3, p { margin: 0; font-weight: inherit; }
 .skip-main { position: fixed; left: 12px; top: -60px; z-index: 400; padding: 10px 16px; background: var(--stock); color: var(--ink); }
 .skip-main:focus { top: 12px; }
 .defs { position: absolute; width: 0; height: 0; overflow: hidden; }
-
-/* Paper tooth over everything, like a printed sheet */
-.grain {
-  position: fixed; inset: 0; z-index: 300; pointer-events: none; mix-blend-mode: multiply; opacity: 1;
-  background: url(../assets/watercolor/paper.webp) 0 0 / 512px 512px;
-}
 
 /* Fine line icons */
 .ico { width: 1.2em; height: 1.2em; fill: none; stroke: currentColor; stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; flex: none; }

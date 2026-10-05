@@ -47,8 +47,7 @@
   opacity: calc(1 - var(--tear) * .95);
 }
 .pass-half { position: relative; display: flex; flex-direction: column; background: var(--stock); color: var(--ink); overflow: hidden; text-align: left; }
-/* paper tooth and an edge of light, so it reads as card stock */
-.pass-half::before { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; mix-blend-mode: multiply; background: url(../assets/watercolor/paper.webp) 0 0 / 512px 512px; opacity: .22; }
+/* an edge of light, so it reads as card stock */
 .pass-half::after { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), inset 0 -1px 0 rgba(69, 111, 114, .22); }
 
 /* perforation: a row of small round holes where the two halves meet */

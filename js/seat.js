@@ -138,11 +138,7 @@
 
   function build() {
     const seatNo = site.pass.stubSeat || '1A';
-
-    /* the overhead strip: air vent, seat belt sign, call button */
     beltEl = h('div', { class: 'belt', 'aria-hidden': 'true' }, KY.icon('belt'));
-    const psu = h('div', { class: 'psu', 'aria-hidden': 'true' },
-      h('span', { class: 'psu-vent' }), beltEl, h('span', { class: 'psu-call' }), h('span', { class: 'psu-seat' }, seatNo));
 
     backEl = h('a', { class: 'scr-back', href: KY.href.menu }, KY.icon('arrow-left'), h('span', null, site.ui.menu));
     brandEl = h('span', { class: 'scr-brand' }, site.pass.airline);
@@ -155,24 +151,15 @@
       h('a', { class: 'foot-link', href: KY.href.passport }, h('span', null, site.ui.passport), wink(site.ui.passportEmoji)));
     bootEl = h('div', { class: 'boot', 'aria-hidden': 'true' }, h('span', null, site.pass.airline));
     const ui = h('div', { class: 'screen-ui' }, bar, viewEl, footEl);
-    const glass = h('div', { class: 'glass' }, ui, h('div', { class: 'glare', 'aria-hidden': 'true' }), bootEl);
 
     const vol = h('button', { class: 'vol', type: 'button', 'data-sound-toggle': '', 'aria-pressed': 'false', 'aria-label': site.ui.sound }, KY.icon('speaker-off'));
-    const bezel = h('div', { class: 'bezel' },
-      h('span', { class: 'bezel-cam', 'aria-hidden': 'true' }), glass,
-      h('div', { class: 'bezel-foot' },
-        h('span', { class: 'led', 'aria-hidden': 'true' }),
-        h('span', { class: 'bezel-mark', 'aria-hidden': 'true' }, site.pass.airline),
+    const scene = h('div', { class: 'scene' },
+      h('div', { class: 'glass' }, ui, h('div', { class: 'glare', 'aria-hidden': 'true' }), bootEl),
+      beltEl,
+      h('div', { class: 'bezel-items' },
+        h('span', { class: 'bezel-mark', 'aria-hidden': 'true' }, site.pass.airline + '  ' + seatNo),
         h('div', { class: 'bezel-ports' }, h('span', { class: 'jack', 'aria-hidden': 'true' }), vol)));
-
-    /* the seat itself: fabric headrest, hard shell with the screen recessed into it, tray table, pocket */
-    const shell = h('div', { class: 'shell' },
-      h('div', { class: 'headrest', 'aria-hidden': 'true' }),
-      h('div', { class: 'plate' }, h('div', { class: 'recess' }, bezel)),
-      h('div', { class: 'seam', 'aria-hidden': 'true' }),
-      h('div', { class: 'tray', 'aria-hidden': 'true' }, h('div', { class: 'latch' }, h('i'), h('i')), h('div', { class: 'tray-inset' })),
-      h('div', { class: 'pocket', 'aria-hidden': 'true' }, h('span', { class: 'magazine' })));
-    el.append(h('div', { class: 'seat-stage' }, psu, shell));
+    el.append(h('div', { class: 'seat-stage' }, scene));
 
     /* the reading light lives in the header */
     lightBtn = document.getElementById('hud-light');
@@ -186,22 +173,47 @@
     });
   }
 
+  let currentNode = null;
+
   KY.screens.seat = {
     el,
+    placeId: null,
     init: build,
     title(r) {
-      if (!r || !r.view || r.view === 'menu') return 'Menu';
-      const t = site.hub.tiles.find((x) => x.id === r.view);
+      const view = (r && r.view) || 'menu';
+      const V = KY.views && KY.views[view];
+      if (V && V.title) return V.title(r);
+      const t = site.hub.tiles.find((x) => x.id === view);
       return t ? t.label : 'Menu';
     },
     enter(r, ctx) {
       const view = r.view || 'menu';
       el.dataset.view = view;
       el.classList.toggle('is-hub', view === 'menu');
-      const next = view === 'menu' ? renderHub() : renderStub(view);
-      viewEl.replaceChildren(next);
+      const V = KY.views && KY.views[view];
+      const next = view === 'menu' ? renderHub() : V ? V.render(r, ctx) : renderStub(view);
+      const back = V && V.back ? V.back(r) : { href: KY.href.menu, label: site.ui.menu };
+      backEl.setAttribute('href', back.href);
+      backEl.lastChild.textContent = back.label;
+
+      if (currentNode && currentNode._leave) currentNode._leave();
+      if (currentNode && currentNode._onKey) currentNode.removeEventListener('keydown', currentNode._onKey);
+      const old = viewEl.firstElementChild;
+      const via = ctx.opts && ctx.opts.via;
+      if (via === 'fly' && old && ctx.same && ctx.opts.origin && !KY.reducedMotion()) {
+        /* the new page opens like a lens from the lighthouse you flew to */
+        next.classList.add('is-overlay');
+        viewEl.append(next);
+        const o = ctx.opts.origin;
+        const R = Math.hypot(Math.max(o.x, viewEl.clientWidth - o.x), Math.max(o.y, viewEl.clientHeight - o.y)) + 40;
+        const done = () => { if (old.parentNode) old.remove(); next.classList.remove('is-overlay'); next.style.clipPath = ''; };
+        KY.animate(next, [{ clipPath: `circle(0px at ${o.x}px ${o.y}px)` }, { clipPath: `circle(${R}px at ${o.x}px ${o.y}px)` }], { duration: 950, easing: 'cubic-bezier(.65, 0, .25, 1)' }).finished.then(done, done);
+      } else {
+        viewEl.replaceChildren(next);
+        if (ctx.same) KY.animate(next, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 600 });
+      }
+      currentNode = next;
       viewEl.scrollTop = 0;
-      if (ctx.same) KY.animate(next, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 600 });
       clearInterval(clock);
       clock = setInterval(tick, 20000);
       tick();
@@ -216,6 +228,6 @@
       beltTimer = setTimeout(() => { beltEl.classList.remove('is-lit'); if (KY.audio) KY.audio.chime(); }, 2800);
       setTimeout(() => el.classList.remove('is-booting'), 3400);
     },
-    leave() { clearInterval(clock); },
+    leave() { clearInterval(clock); if (currentNode && currentNode._leave) currentNode._leave(); },
   };
 })();

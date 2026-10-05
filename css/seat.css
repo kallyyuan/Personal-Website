@@ -1,104 +1,39 @@
 /* ==========================================================================
    THE SEATBACK
-   Modeled on a real economy seat: a soft fabric headrest, a pale hard shell
-   with the screen recessed into it, a tray table with its latch below.
-   The picture is cropped like a photograph, so the seat runs off the bottom.
+   A studio render of a simple, modern seat (assets/seat), with the real
+   interface laid into its screen. Cropped like a photograph.
    ========================================================================== */
 
-#screen-seat {
-  --psu: 40px; --head: 88px; --peek: 58px;
-  overflow: hidden; padding: var(--hud-h) 0 0;
-}
-.seat-stage { height: 100%; display: flex; flex-direction: column; align-items: center; }
+#screen-seat { overflow: hidden; padding: var(--hud-h) 0 0; }
+.seat-stage { height: 100%; display: flex; justify-content: center; }
 
-/* ---------- overhead strip ---------- */
-.psu {
-  flex: none; margin-top: 4px; height: 32px; width: min(400px, 70vw); padding: 0 20px; border-radius: 16px;
-  display: flex; align-items: center; justify-content: space-between;
-  background: linear-gradient(180deg, #EDF0F5, #D3D9E3);
-  box-shadow: inset 0 1px 0 #fff, inset 0 -1px 2px rgba(60, 75, 95, .22), 0 8px 12px -6px rgba(40, 55, 75, .3);
+/* ---------- the seat: a studio render, with the real interface laid into its screen ---------- */
+.scene {
+  --glass-l: 11.3%; --glass-t: 22.36%; --glass-w: 77.4%; --glass-h: 62.11%;
+  position: relative; flex: none; margin-top: 6px; container-type: inline-size;
+  width: min(98vw, calc((100svh - var(--hud-h) - 22px) * 2000 / 1200));
+  aspect-ratio: 2000 / 1333;
+  background: url(../assets/seat/seat-wide.webp) 0 0 / 100% 100% no-repeat;
 }
-.psu-vent { width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle, #8E9AA9 0 2.4px, #C1C9D4 3px 5px, #DDE2EA 5.6px); box-shadow: inset 0 1px 2px rgba(40, 55, 75, .45), 0 1px 0 #fff; }
-.psu-call { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #F5F7FA, #BEC6D2); box-shadow: inset 0 -1px 2px rgba(40, 55, 75, .3), 0 1px 1px rgba(40, 55, 75, .25); }
-.psu-seat { font: 500 .56rem/1 var(--sans); letter-spacing: .3em; color: #6B7C80; padding-left: .3em; }
-.belt { width: 30px; height: 19px; display: grid; place-items: center; border-radius: 3px; background: #4A555B; color: #8A999C; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1), 0 1px 0 rgba(255, 255, 255, .8); transition: color .8s, box-shadow .8s; }
-.belt .ico { width: 14px; height: 14px; }
-.belt.is-lit { color: #FFB27A; background: #4A3A32; box-shadow: inset 0 0 0 1px rgba(224, 123, 57, .5), 0 0 14px rgba(224, 123, 57, .55), 0 1px 0 rgba(255, 255, 255, .8); }
+.glass {
+  position: absolute; left: var(--glass-l); top: var(--glass-t); width: var(--glass-w); height: var(--glass-h);
+  overflow: hidden; border-radius: 1.5cqw; background: #12181B;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .45), inset 0 10px 18px -10px rgba(10, 20, 30, .5);
+}
+.glare { position: absolute; inset: 0; z-index: 6; pointer-events: none; background: linear-gradient(118deg, rgba(255, 255, 255, .2) 0, rgba(255, 255, 255, .05) 20%, rgba(255, 255, 255, 0) 38%); }
 
-/* ---------- the seat ---------- */
-.shell {
-  --above: calc(var(--hud-h) + var(--psu) + 12px);
-  position: relative; flex: none; width: min(1220px, 96vw); height: 150vh; margin-top: 12px;
-  border-radius: 170px 170px 14px 14px / 120px 120px 14px 14px;
-  background: linear-gradient(180deg, #E3E7EE 0%, #D8DDE6 38%, #CED5DF 100%);
-  box-shadow: 0 2px 3px rgba(40, 55, 75, .2), 0 30px 60px -24px rgba(40, 55, 75, .5), 0 0 0 1px rgba(255, 255, 255, .5) inset;
-}
-/* plastic grain and a little curve to the light */
-.shell::before { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: url(../assets/watercolor/paper.webp) 0 0 / 340px 340px; mix-blend-mode: multiply; opacity: .55; }
-.shell::after {
-  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: radial-gradient(60% 26% at 24% 8%, rgba(255, 255, 255, .55), transparent 72%),
-              linear-gradient(90deg, rgba(255, 255, 255, .5) 0, transparent 7%, transparent 93%, rgba(70, 90, 115, .16) 100%);
-}
-
-.headrest {
-  position: absolute; top: 0; left: 0; right: 0; height: var(--head); z-index: 1;
-  border-radius: 170px 170px 70px 70px / 120px 120px 44px 44px;
-  background:
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, .13) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(-45deg, rgba(55, 80, 115, .09) 0 1px, transparent 1px 3px),
-    linear-gradient(180deg, #BFC9DA, #AEBACE);
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .45), 0 10px 16px -8px rgba(55, 75, 105, .45);
-}
-.headrest::after { content: ''; position: absolute; left: 8%; right: 8%; bottom: 14px; border-bottom: 1px dashed rgba(255, 255, 255, .6); }
-
-.plate { position: relative; z-index: 2; margin-top: calc(var(--head) - 12px); padding: 0 clamp(24px, 3.4vw, 52px); }
-.recess {
-  height: calc(100svh - var(--above) - var(--head) + 12px - var(--peek)); padding: 8px; border-radius: 34px;
-  background: linear-gradient(145deg, #B9C2CF, #E2E6ED);
-  box-shadow: inset 2px 4px 7px rgba(55, 72, 98, .38), inset -2px -2px 5px rgba(255, 255, 255, .85), 0 1px 0 rgba(255, 255, 255, .9);
-}
-
-/* the frame around the glass: charcoal, not black */
-.bezel {
-  position: relative; height: 100%; padding: 14px 14px 40px; border-radius: 26px;
-  background: linear-gradient(160deg, #596269, #424A50 55%, #373E44);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 0 0 1px rgba(0, 0, 0, .35), 0 1px 1px rgba(30, 40, 55, .35), 0 8px 14px -8px rgba(30, 40, 55, .55);
-}
-.bezel-cam { position: absolute; top: 5px; left: 50%; width: 4px; height: 4px; border-radius: 50%; background: #1A2024; box-shadow: 0 0 0 1px #6A757C; transform: translateX(-50%); }
-.bezel-foot { position: absolute; left: 22px; right: 22px; bottom: 10px; height: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.led { width: 5px; height: 5px; border-radius: 50%; background: #6FB894; box-shadow: 0 0 7px rgba(111, 184, 148, .85); }
-.bezel-mark { font: 500 .5rem/1 var(--sans); letter-spacing: .42em; text-transform: uppercase; color: #929FA4; padding-left: .42em; }
+/* small parts that sit on the render */
+.belt { position: absolute; left: 84.4%; top: 12.4%; width: 2.4cqw; height: 1.5cqw; min-width: 24px; min-height: 15px; display: grid; place-items: center; border-radius: 3px; background: #6D8A88; color: #C9DAD8; transition: color .8s, background .8s, box-shadow .8s; }
+.belt .ico { width: 62%; height: 62%; }
+.belt.is-lit { color: #FFD2AE; background: #C26A2C; box-shadow: 0 0 14px rgba(224, 123, 57, .75); }
+.bezel-items { position: absolute; left: 11.3%; width: 77.4%; top: 85.2%; height: 3.6%; display: flex; align-items: center; justify-content: space-between; padding: 0 1.2cqw; pointer-events: none; }
+.bezel-items > * { pointer-events: auto; }
+.bezel-mark { font: 600 max(.44rem, .62cqw)/1 var(--sans); letter-spacing: .5em; text-transform: uppercase; color: #8B9AA0; padding-left: .5em; }
 .bezel-ports { display: flex; align-items: center; gap: 12px; }
-.jack { width: 13px; height: 13px; border-radius: 50%; background: radial-gradient(circle, #1B2326 0 2.4px, #7C8892 2.9px 4.3px, #B2BBC6 4.8px); box-shadow: inset 0 1px 1px rgba(0, 0, 0, .5); }
-.vol { width: 28px; height: 17px; display: grid; place-items: center; padding: 0; border: 1px solid rgba(255, 255, 255, .24); border-radius: 3px; background: none; color: #B4BFC3; }
+.jack { width: 13px; height: 13px; border-radius: 50%; background: radial-gradient(circle, #10171A 0 2.4px, #7C8892 2.9px 4.3px, #B2BBC6 4.8px); box-shadow: inset 0 1px 1px rgba(0, 0, 0, .5); }
+.vol { width: 28px; height: 17px; display: grid; place-items: center; padding: 0; border: 1px solid rgba(255, 255, 255, .26); border-radius: 3px; background: none; color: #B4BFC3; }
 .vol .ico { width: 12px; height: 12px; }
 .vol[aria-pressed="true"] { color: #FFB27A; border-color: rgba(255, 178, 122, .7); }
-
-.glass { position: relative; height: 100%; overflow: hidden; border-radius: 6px; background: #12181B; box-shadow: 0 0 0 1px rgba(0, 0, 0, .6), inset 0 0 0 1px rgba(255, 255, 255, .22); }
-.glare { position: absolute; inset: 0; z-index: 6; pointer-events: none; background: linear-gradient(118deg, rgba(255, 255, 255, .24) 0, rgba(255, 255, 255, .06) 22%, rgba(255, 255, 255, 0) 40%), radial-gradient(120% 100% at 50% 40%, transparent 64%, rgba(20, 30, 36, .1) 100%); }
-
-/* below the screen: the seam, the tray table and its latch, the pocket */
-.seam { position: relative; z-index: 2; height: 10px; margin: 12px 0 0; border-top: 1px solid rgba(60, 78, 100, .3); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8); }
-.tray {
-  position: relative; z-index: 2; height: 230px; margin: 0 clamp(54px, 6.6vw, 98px); border-radius: 16px 16px 0 0;
-  background: linear-gradient(180deg, #DBE0E8, #CFD6E0);
-  box-shadow: inset 0 2px 3px rgba(255, 255, 255, .8), inset 0 -2px 8px rgba(60, 78, 100, .16), 0 0 0 1px rgba(60, 78, 100, .14);
-}
-.latch {
-  position: absolute; top: -1px; left: 50%; width: 112px; height: 44px; transform: translateX(-50%); border-radius: 0 0 24px 24px;
-  background: linear-gradient(180deg, #EAEEF3, #C9D1DC); display: flex; justify-content: center; gap: 12px; padding-top: 6px;
-  box-shadow: inset 0 -2px 3px rgba(60, 78, 100, .22), inset 0 2px 0 rgba(255, 255, 255, .9), 0 4px 5px -1px rgba(60, 78, 100, .32);
-}
-.latch i { width: 28px; height: 14px; border-radius: 4px; background: linear-gradient(180deg, #C4CCD8, #DDE2EA); box-shadow: inset 0 1px 2px rgba(60, 78, 100, .4), 0 1px 0 rgba(255, 255, 255, .85); }
-.tray-inset { position: absolute; left: 7%; right: 7%; top: 64px; bottom: 28px; border-radius: 10px; box-shadow: inset 0 2px 4px rgba(60, 78, 100, .18), inset 0 -1px 0 rgba(255, 255, 255, .7); }
-.pocket {
-  position: relative; z-index: 2; height: 240px; margin: 0 clamp(34px, 4.4vw, 70px); border-radius: 18px 18px 0 0; overflow: hidden;
-  background: repeating-linear-gradient(90deg, rgba(60, 78, 100, .13) 0 1px, transparent 1px 7px), linear-gradient(180deg, #C2CAD6, #B6BFCD);
-  box-shadow: inset 0 3px 6px rgba(60, 78, 100, .3);
-}
-.magazine { position: absolute; left: 14%; top: 22px; width: 190px; height: 230px; background: #F6F7FA; transform: rotate(-3deg); box-shadow: 0 2px 6px rgba(60, 78, 100, .25); }
-.magazine::before { content: ''; position: absolute; left: 14px; right: 14px; top: 16px; height: 6px; background: var(--orange); }
 
 /* ---------- the screen ---------- */
 .screen-ui {
@@ -184,33 +119,25 @@
 .stub-title { font-family: var(--display); font-weight: 300; font-size: clamp(2.4rem, 5vw, 4rem); line-height: 1; letter-spacing: -.02em; }
 .stub-note { font: 400 .7rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--scr-soft); }
 
-/* shorter laptop screens: the overhead strip makes way for the screen */
-@media (max-height: 860px) {
-  #screen-seat { --psu: 0px; --head: 74px; --peek: 50px; }
-  .psu { display: none; }
-  .shell { margin-top: 4px; }
-}
-
 /* ---------- phones ---------- */
-@media (max-width: 760px) {
-  #screen-seat { --psu: 0px; --head: 54px; --peek: 40px; }
-  .psu { display: none; }
-  .shell { width: 100vw; margin-top: 4px; border-radius: 70px 70px 10px 10px / 54px 54px 10px 10px; }
-  .headrest { border-radius: 70px 70px 40px 40px / 54px 54px 30px 30px; }
-  .plate { padding: 0 8px; }
-  .recess { padding: 5px; border-radius: 24px; }
-  .bezel { padding: 10px 10px 34px; border-radius: 18px; }
-  .bezel-foot { left: 14px; right: 14px; bottom: 8px; }
+/* phones and tall windows use the portrait render */
+@media (max-width: 760px), (max-aspect-ratio: 4/5) {
+  .scene {
+    --glass-l: 6.8%; --glass-t: 12.23%; --glass-w: 86.4%; --glass-h: 73.37%;
+    width: min(100vw, calc((100svh - var(--hud-h) - 8px) * 1000 / 1620)); aspect-ratio: 1000 / 1750; margin-top: 2px;
+    background-image: url(../assets/seat/seat-tall.webp);
+  }
+  .glass { border-radius: 2.6cqw; }
+  .belt { left: 83%; top: 4.6%; }
+  .bezel-items { left: 6.8%; width: 86.4%; top: 86.4%; height: 3.2%; }
   .scr-bar { padding: 14px 16px 12px; }
   .scr-foot { padding: 12px 16px 14px; flex-wrap: nowrap; gap: 10px; font-size: .58rem; letter-spacing: .12em; }
   .view--hub { padding: 0 16px; overflow-y: auto; }
   .hub { grid-template-columns: 1fr 1fr; grid-template-rows: auto; flex: none; width: 100%; }
-  .tile { min-height: 218px; padding: 16px; }
-  .tile--maps { grid-column: 1 / 3; grid-row: auto; min-height: 330px; padding: 16px 20px 18px; }
+  .tile { min-height: 190px; padding: 16px; }
+  .tile--maps { grid-column: 1 / 3; grid-row: auto; min-height: 262px; padding: 16px 20px 18px; }
   .tile-art { right: 16px; top: 36px; width: 62px; }
   .tile-go { right: 16px; bottom: 16px; }
-  .tray { margin: 0 34px; }
-  .pocket { margin: 0 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

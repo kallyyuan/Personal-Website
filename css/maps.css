@@ -1,0 +1,132 @@
+/* ==========================================================================
+   MAPS and CITY pages, inside the seat screen
+   ========================================================================== */
+
+.view--maps { height: 100%; display: flex; padding: 0 28px; }
+.mapbox {
+  position: relative; flex: 1; min-height: 0; container-type: size; display: grid; place-items: center; overflow: hidden;
+  border: 1px solid var(--scr-line);
+}
+.mapcam { position: relative; width: min(100cqw, calc(100cqh * var(--aspect))); aspect-ratio: var(--aspect); transition: transform .85s cubic-bezier(.5, 0, .2, 1); }
+.mapcam.is-zoomed { transform: scale(2.7); }
+.mapcam img { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; }
+.map-night { display: none; mix-blend-mode: normal !important; }
+#screen-seat[data-night="true"] .map-day { display: none; }
+#screen-seat[data-night="true"] .map-night { display: block; }
+.map-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; color: var(--teal); }
+#screen-seat[data-night="true"] .map-lines { color: #B3CCCB; }
+.grat { fill: none; stroke: currentColor; stroke-width: .5; stroke-dasharray: 1 5; opacity: .3; }
+.coast { fill: none; stroke: currentColor; stroke-width: .6; stroke-linejoin: round; opacity: .75; vector-effect: non-scaling-stroke; }
+.route-past { fill: none; stroke: var(--orange); stroke-width: 1.3; stroke-dasharray: 1.5 6; stroke-linecap: round; }
+.route-now { fill: none; stroke: var(--orange); stroke-width: 1.8; stroke-linecap: round; }
+
+/* the lighthouses */
+.pin { --pw: clamp(15px, 2.1cqw, 26px); position: absolute; width: 0; height: 0; z-index: 3; color: var(--scr-ink); text-decoration: none; outline: none; }
+.pin--based { --pw: clamp(19px, 2.7cqw, 33px); }
+.pin::before { content: ''; position: absolute; left: -26px; top: calc(var(--pw) * -2.2); width: 52px; height: calc(var(--pw) * 2.9); }
+.pin-icon { position: absolute; left: 0; bottom: 0; width: var(--pw); transform: translateX(-50%); transition: transform .5s var(--ease); }
+.pin-svg { width: 100%; height: auto; overflow: visible; }
+.pin:hover .pin-icon, .pin:focus-visible .pin-icon { transform: translateX(-50%) translateY(-3px); }
+.pin:focus-visible .pin-icon { outline: 1px solid var(--orange); outline-offset: 6px; }
+.pin-lamp { animation: lamp 3.4s ease-in-out infinite; }
+.pin-ring { position: absolute; left: 0; bottom: calc(var(--pw) * 1.208); width: 18px; height: 18px; margin: 0 0 -9px -9px; border: 1px solid var(--orange); border-radius: 50%; animation: ring 4.6s ease-out infinite; pointer-events: none; }
+.pin--based .pin-ring { animation-duration: 3.6s; }
+.pin-code { position: absolute; left: 0; top: 5px; transform: translateX(-50%); font: 600 .54rem/1 var(--sans); letter-spacing: .2em; padding-left: .2em; color: var(--orange-text); pointer-events: none; }
+#screen-seat[data-night="true"] .pin-code { color: #FFB27A; }
+/* while the camera is zoomed in, only the city you flew to keeps its code */
+.pin-code { transition: opacity .4s; }
+.mapcam.is-zoomed .pin:not(.is-arrived) .pin-code { opacity: 0; }
+@keyframes lamp { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes ring { 0% { transform: scale(.5); opacity: .9; } 100% { transform: scale(3.4); opacity: 0; } }
+.pin.is-arrived .pin-ring { animation: ring-burst .9s ease-out 2; border-width: 1.5px; }
+@keyframes ring-burst { 0% { transform: scale(.6); opacity: 1; } 100% { transform: scale(6); opacity: 0; } }
+
+/* the card that opens over a city. It is part of the link, so it can be clicked. */
+.pin-card {
+  position: absolute; left: 0; bottom: calc(var(--pw) * 1.95); transform: translate(-50%, 6px); min-width: 156px; padding: 12px 16px 13px;
+  display: flex; flex-direction: column; gap: 3px; white-space: nowrap; text-align: left;
+  background: var(--scr-bg); box-shadow: 0 0 0 1px var(--scr-line), 0 14px 26px -14px rgba(31, 51, 53, .45);
+  opacity: 0; pointer-events: none; transition: opacity .3s, transform .45s var(--ease);
+}
+.pin:hover, .pin:focus-visible { z-index: 8; }
+.pin:hover .pin-card, .pin:focus-visible .pin-card { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.pin-card::after { content: ''; position: absolute; left: 50%; top: 100%; width: 1px; height: 8px; background: var(--orange); }
+.pin-name { font: 300 1.3rem/1.1 var(--display); letter-spacing: -.01em; color: var(--scr-ink); }
+.pin-sub { font: 500 .58rem/1.3 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--scr-soft); white-space: pre; }
+.pin-go { display: flex; align-items: center; gap: 8px; margin-top: 7px; font: 600 .6rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--orange-text); }
+#screen-seat[data-night="true"] .pin-go { color: #FFB27A; }
+.pin-go .ico { width: 1.5em; height: 1.5em; }
+
+/* the plane, and the readout under it */
+.plane { position: absolute; z-index: 4; width: clamp(18px, 2.6cqw, 30px); height: clamp(18px, 2.6cqw, 30px); color: var(--scr-ink); pointer-events: none; filter: drop-shadow(0 3px 3px rgba(31, 51, 53, .28)); will-change: transform, left, top; }
+.plane svg { width: 100%; height: 100%; overflow: visible; }
+.readout { position: absolute; left: 20px; bottom: 16px; z-index: 5; display: flex; align-items: center; gap: 18px; padding: 10px 14px; background: color-mix(in srgb, var(--scr-bg) 86%, transparent); box-shadow: 0 0 0 1px var(--scr-line); font: 600 .66rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--scr-ink); opacity: 0; transition: opacity .5s; font-variant-numeric: tabular-nums; }
+.readout.is-on { opacity: 1; }
+.ro-route { display: inline-flex; align-items: center; gap: 12px; }
+.ro-route .ico { width: 1.6em; height: 1.6em; color: var(--orange); }
+.ro-km { color: var(--scr-soft); font-weight: 500; }
+
+/* the question */
+.ask {
+  position: absolute; inset: 0; z-index: 7; display: grid; place-content: center; justify-items: center; gap: clamp(14px, 4cqh, 34px); text-align: center;
+  background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--scr-bg) 96%, transparent) 0, color-mix(in srgb, var(--scr-bg) 84%, transparent) 70%, color-mix(in srgb, var(--scr-bg) 70%, transparent) 100%);
+  transition: opacity .7s ease, visibility .7s;
+}
+.ask.is-gone { opacity: 0; visibility: hidden; pointer-events: none; }
+.ask-title { font: 300 clamp(2.4rem, 6cqw, 4.6rem)/1 var(--display); letter-spacing: -.025em; }
+.ask-groups { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(26px, 7cqw, 90px); }
+.ask-group h3 { font: 600 .6rem/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--scr-soft); margin-bottom: 14px; }
+.ask-list { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.ask-btn { position: relative; display: inline-flex; align-items: baseline; gap: 12px; padding: 6px 4px; border: 0; background: none; color: var(--scr-ink); font: 300 clamp(1.25rem, 2.5cqw, 1.9rem)/1.15 var(--display); letter-spacing: -.01em; }
+.ask-btn i { font: 600 .56rem/1 var(--sans); letter-spacing: .22em; font-style: normal; color: var(--orange-text); }
+#screen-seat[data-night="true"] .ask-btn i { color: #FFB27A; }
+.ask-btn::after { content: ''; position: absolute; left: 4px; right: 4px; bottom: 2px; height: 1px; background: var(--orange); transform: scaleX(0); transform-origin: left; transition: transform .5s var(--ease); }
+.ask-btn:hover::after, .ask-btn:focus-visible::after { transform: scaleX(1); }
+
+/* ---------- a city ---------- */
+.is-overlay { position: absolute; inset: 0; z-index: 9; background: var(--scr-bg); overflow-y: auto; }
+.view--city { min-height: 100%; display: flex; flex-direction: column; }
+.city-hero { position: relative; flex: none; height: clamp(176px, 19cqw, 290px); margin: 0 28px; overflow: hidden; box-shadow: 0 0 0 1px var(--scr-line); }
+.city-map { position: absolute; left: 0; top: 0; max-width: none; mix-blend-mode: multiply; }
+.city-map--night { display: none; mix-blend-mode: normal !important; }
+#screen-seat[data-night="true"] .city-map--day { display: none; }
+#screen-seat[data-night="true"] .city-map--night { display: block; }
+.city-hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, color-mix(in srgb, var(--scr-bg) 92%, transparent) 0, color-mix(in srgb, var(--scr-bg) 55%, transparent) 38%, transparent 70%); }
+.city-pin { position: absolute; left: 50%; top: 46%; z-index: 2; width: 26px; transform: translate(-50%, -88%); color: var(--scr-ink); }
+.city-pin svg { width: 100%; height: auto; overflow: visible; }
+.city-head { position: absolute; left: 26px; bottom: 18px; z-index: 3; }
+.city-meta { display: flex; gap: 14px; align-items: center; font: 600 .6rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--scr-soft); }
+.city-meta b { font-weight: 600; color: var(--orange-text); }
+#screen-seat[data-night="true"] .city-meta b { color: #FFB27A; }
+.city-name { font: 300 clamp(2.4rem, 5.4vw, 4.4rem)/1 var(--display); letter-spacing: -.03em; margin: 10px 0 8px; }
+.city-when { display: flex; gap: 18px; align-items: center; font: 500 .62rem/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--scr-soft); }
+.city-body { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(26px, 4.4vw, 60px); padding: 26px 28px 32px; }
+.city-col h2 { font: 600 .6rem/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--scr-soft); padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--scr-line); }
+.pcard { display: grid; grid-template-columns: 46% 1fr; gap: 20px; align-items: center; color: inherit; text-decoration: none; }
+.pcard-media { box-shadow: 0 0 0 1px var(--scr-line); transition: transform .7s var(--ease); }
+.pcard:hover .pcard-media { transform: translateY(-3px); }
+.pcard h3 { font: 300 1.4rem/1.15 var(--display); letter-spacing: -.01em; }
+.pcard-meta { display: flex; gap: 14px; align-items: center; margin-top: 9px; font: 500 .6rem/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--scr-soft); }
+.wrow { display: flex; align-items: center; gap: 16px; padding: 15px 0; color: inherit; text-decoration: none; border-bottom: 1px solid var(--scr-line); }
+.wrow-title { flex: 1; font: 300 1.25rem/1.2 var(--display); letter-spacing: -.01em; }
+.wrow .ico { width: 1.5em; height: 1.5em; color: var(--orange); opacity: 0; transform: translateX(-8px); transition: opacity .4s, transform .5s var(--ease); }
+.wrow:hover .ico, .wrow:focus-visible .ico { opacity: 1; transform: none; }
+#screen-seat[data-night="true"] .media--placeholder { background: #2F4A50; color: #C5D6D7; box-shadow: 0 0 0 1px rgba(237, 240, 246, .22) inset; }
+
+@media (max-width: 760px), (max-aspect-ratio: 4/5) {
+  .view--maps { padding: 0 16px; }
+  .ask-groups { flex-direction: column; gap: 18px; }
+  .ask-title { font-size: 2.6rem; }
+  .city-hero { margin: 0 16px; height: 230px; }
+  .city-head { left: 16px; bottom: 16px; right: 16px; }
+  .city-when { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .city-when span { white-space: nowrap; }
+  .city-body { grid-template-columns: 1fr; padding: 22px 16px 28px; gap: 28px; }
+  .pcard { grid-template-columns: 1fr; gap: 12px; }
+  .readout { left: 12px; bottom: 10px; font-size: .6rem; gap: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-lamp, .pin-ring { animation: none; }
+  .mapcam, .pin-card, .ask { transition: none; }
+}

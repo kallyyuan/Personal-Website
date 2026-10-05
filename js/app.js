@@ -166,4 +166,10 @@
   Object.keys(KY.screens).forEach((n) => { if (KY.screens[n].init) KY.screens[n].init(); });
   window.addEventListener('hashchange', route);
   route();
+
+  /* While the opening page plays, quietly fetch what the next screens need. */
+  const tall = window.matchMedia('(max-width: 760px), (max-aspect-ratio: 4/5)').matches;
+  const later = [tall ? 'assets/seat/seat-tall.webp' : 'assets/seat/seat-wide.webp', 'assets/watercolor/map.webp'];
+  const warm = () => later.forEach((src) => { const i = new Image(); i.decoding = 'async'; i.src = src; });
+  if ('requestIdleCallback' in window) requestIdleCallback(() => setTimeout(warm, 600), { timeout: 3000 }); else setTimeout(warm, 1800);
 })();

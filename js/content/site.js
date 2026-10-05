@@ -63,6 +63,9 @@ KALLY.site = {
     ids: ['work-copy-1', 'work-strategy-1', 'work-research-1', 'writing-personal-1', 'sh-photos-1'],
   },
 
+  /* Maps opens by asking this */
+  map: { ask: 'Where to?' },
+
   ui: {
     menu: 'Menu',
     back: 'Back',
