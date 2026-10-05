@@ -10,7 +10,6 @@
   <meta property="og:description" content="I believe meeting people is a journey. A flight through the work of Kally Yuan, Creative Strategist and Copywriter.">
   <meta property="og:type" content="website">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="assets/fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/gate.css">
@@ -48,7 +47,11 @@
       <svg class="ico" aria-hidden="true"><use href="#i-arrow-long"/></svg>
     </a>
     <div class="hud-right">
-      <button class="hud-link hud-sound" id="hud-sound" type="button" aria-pressed="false">
+      <button class="hud-link hud-light" id="hud-light" type="button" aria-pressed="false" aria-label="Reading light">
+        <svg class="ico" aria-hidden="true"><use href="#i-light"/></svg>
+        <span>Light</span>
+      </button>
+      <button class="hud-link hud-sound" id="hud-sound" type="button" aria-pressed="false" aria-label="Sound">
         <svg class="ico" aria-hidden="true"><use href="#i-speaker-off"/></svg>
         <span>Sound</span>
       </button>

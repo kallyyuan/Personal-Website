@@ -14,8 +14,8 @@ KALLY.site = {
   /* The opening page */
   gate: {
     headline: 'I believe meeting people is a journey.',
-    accentWord: 'journey',      /* gets the italic and the blue */
-    seal: '遇',                  /* the small stamp: 遇 means "to meet". Another option: 缘 */
+    accentWord: 'journey',      /* gets the orange */
+    seal: '缘',                  /* the small stamp: 缘 means fate, the pull that brings people together. Another option: 遇 */
   },
 
   /* The boarding pass. Each row is [label, value]. */
@@ -58,6 +58,7 @@ KALLY.site = {
      Find an id in the content files, for example 'work-copy-1' or 'sh-photos-1'. */
   tour: {
     label: 'Short haul',
+    emoji: '✈️',            /* a small wink next to the link. Delete the emoji to remove it. */
     minutes: 2,
     ids: ['work-copy-1', 'work-strategy-1', 'work-research-1', 'writing-personal-1', 'sh-photos-1'],
   },
@@ -72,8 +73,10 @@ KALLY.site = {
     context: 'What it was for',
     shows: 'What this shows',
     passport: 'Passport',
+    passportEmoji: '🛂',
     sound: 'Sound',
     readingLight: 'Reading light',
+    light: 'Light',
     seat: 'Seat 1A',
   },
 

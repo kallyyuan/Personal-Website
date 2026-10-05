@@ -138,18 +138,21 @@
 
   function build() {
     const seatNo = site.pass.stubSeat || '1A';
+
+    /* the overhead strip: air vent, seat belt sign, call button */
     beltEl = h('div', { class: 'belt', 'aria-hidden': 'true' }, KY.icon('belt'));
-    lightBtn = h('button', { class: 'reading-light', type: 'button', 'aria-pressed': 'false', 'aria-label': site.ui.readingLight, onclick: () => setNight(el.dataset.night !== 'true', true) }, KY.icon('light'));
-    const top = h('div', { class: 'seat-top' }, beltEl, h('div', { class: 'plaque', 'aria-hidden': 'true' }, seatNo), lightBtn);
+    const psu = h('div', { class: 'psu', 'aria-hidden': 'true' },
+      h('span', { class: 'psu-vent' }), beltEl, h('span', { class: 'psu-call' }), h('span', { class: 'psu-seat' }, seatNo));
 
     backEl = h('a', { class: 'scr-back', href: KY.href.menu }, KY.icon('arrow-left'), h('span', null, site.ui.menu));
     brandEl = h('span', { class: 'scr-brand' }, site.pass.airline);
     timeEl = h('span', { class: 'scr-time' });
     const bar = h('header', { class: 'scr-bar' }, h('div', { class: 'scr-left' }, backEl, brandEl), timeEl);
     viewEl = h('div', { class: 'scr-view' });
+    const wink = (e) => (e ? h('span', { class: 'emoji', 'aria-hidden': 'true' }, e) : null);
     footEl = h('footer', { class: 'scr-foot' },
-      h('a', { class: 'foot-link', href: KY.href.tour }, h('span', null, site.tour.label + ', ' + site.tour.minutes + ' minutes'), KY.icon('arrow-long')),
-      h('a', { class: 'foot-link', href: KY.href.passport }, h('span', null, site.ui.passport)));
+      h('a', { class: 'foot-link', href: KY.href.tour }, h('span', null, site.tour.label + ', ' + site.tour.minutes + ' minutes'), wink(site.tour.emoji), KY.icon('arrow-long')),
+      h('a', { class: 'foot-link', href: KY.href.passport }, h('span', null, site.ui.passport), wink(site.ui.passportEmoji)));
     bootEl = h('div', { class: 'boot', 'aria-hidden': 'true' }, h('span', null, site.pass.airline));
     const ui = h('div', { class: 'screen-ui' }, bar, viewEl, footEl);
     const glass = h('div', { class: 'glass' }, ui, h('div', { class: 'glare', 'aria-hidden': 'true' }), bootEl);
@@ -157,10 +160,23 @@
     const vol = h('button', { class: 'vol', type: 'button', 'data-sound-toggle': '', 'aria-pressed': 'false', 'aria-label': site.ui.sound }, KY.icon('speaker-off'));
     const bezel = h('div', { class: 'bezel' },
       h('span', { class: 'bezel-cam', 'aria-hidden': 'true' }), glass,
-      h('div', { class: 'bezel-foot' }, h('span', { class: 'led', 'aria-hidden': 'true' }), h('span', { class: 'bezel-mark', 'aria-hidden': 'true' }, site.pass.airline), vol));
-    const panel = h('div', { class: 'seat-panel' }, top, bezel, h('div', { class: 'jack', 'aria-hidden': 'true' }));
-    el.append(h('div', { class: 'seat-stage' }, panel));
+      h('div', { class: 'bezel-foot' },
+        h('span', { class: 'led', 'aria-hidden': 'true' }),
+        h('span', { class: 'bezel-mark', 'aria-hidden': 'true' }, site.pass.airline),
+        h('div', { class: 'bezel-ports' }, h('span', { class: 'jack', 'aria-hidden': 'true' }), vol)));
 
+    /* the seat itself: fabric headrest, hard shell with the screen recessed into it, tray table, pocket */
+    const shell = h('div', { class: 'shell' },
+      h('div', { class: 'headrest', 'aria-hidden': 'true' }),
+      h('div', { class: 'plate' }, h('div', { class: 'recess' }, bezel)),
+      h('div', { class: 'seam', 'aria-hidden': 'true' }),
+      h('div', { class: 'tray', 'aria-hidden': 'true' }, h('div', { class: 'latch' }, h('i'), h('i')), h('div', { class: 'tray-inset' })),
+      h('div', { class: 'pocket', 'aria-hidden': 'true' }, h('span', { class: 'magazine' })));
+    el.append(h('div', { class: 'seat-stage' }, psu, shell));
+
+    /* the reading light lives in the header */
+    lightBtn = document.getElementById('hud-light');
+    lightBtn.addEventListener('click', () => setNight(el.dataset.night !== 'true', true));
     let night = false;
     try { night = localStorage.getItem(NIGHT_KEY) === 'on'; } catch (e) { /* ignore */ }
     setNight(night, false);
