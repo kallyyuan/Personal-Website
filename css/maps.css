@@ -25,20 +25,17 @@
 .pin--based { --pw: clamp(19px, 2.7cqw, 33px); }
 .pin::before { content: ''; position: absolute; left: -26px; top: calc(var(--pw) * -1.8); width: 52px; height: calc(var(--pw) * 2.4); }
 .pin-icon {
-  position: absolute; left: 0; bottom: 0; transform: translateX(-50%); transition: transform .5s var(--ease), filter .6s;
+  position: absolute; left: 0; bottom: 0; transform: translateX(-50%); transition: transform .5s var(--ease);
   font: normal 400 calc(var(--pw) * 1.5)/1 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; letter-spacing: 0; text-transform: none; white-space: nowrap;
 }
-#screen-seat[data-night="true"] .pin-icon { filter: drop-shadow(0 0 5px rgba(255, 178, 122, .55)); }
 .pin:hover .pin-icon, .pin:focus-visible .pin-icon { transform: translateX(-50%) translateY(-3px); }
 .pin:focus-visible .pin-icon { outline: 1px solid var(--orange); outline-offset: 6px; }
-.pin-ring { position: absolute; left: 0; bottom: 0; width: 18px; height: 7px; margin: 0 0 -3px -9px; border: 1px solid var(--orange); border-radius: 50%; animation: ring 4.6s ease-out infinite; pointer-events: none; }
-.pin--based .pin-ring { animation-duration: 3.6s; }
+.pin-ring { position: absolute; left: 0; bottom: 0; width: 18px; height: 7px; margin: 0 0 -3px -9px; border: 1px solid var(--orange); border-radius: 50%; opacity: 0; pointer-events: none; }
 .pin-code { position: absolute; left: 0; top: 5px; transform: translateX(-50%); font: 600 .54rem/1 var(--sans); letter-spacing: .2em; padding-left: .2em; color: var(--orange-text); pointer-events: none; }
 #screen-seat[data-night="true"] .pin-code { color: #FFB27A; }
 /* while the camera is zoomed in, only the city you flew to keeps its code */
 .pin-code { transition: opacity .4s; }
 .mapcam.is-zoomed .pin:not(.is-arrived) .pin-code { opacity: 0; }
-@keyframes ring { 0% { transform: scale(.5); opacity: .9; } 100% { transform: scale(3.4); opacity: 0; } }
 .pin.is-arrived .pin-ring { animation: ring-burst .9s ease-out 2; border-width: 1.5px; }
 @keyframes ring-burst { 0% { transform: scale(.6); opacity: 1; } 100% { transform: scale(6); opacity: 0; } }
 
@@ -94,7 +91,6 @@
 #screen-seat[data-night="true"] .city-map--night { display: block; }
 .city-hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, color-mix(in srgb, var(--scr-bg) 92%, transparent) 0, color-mix(in srgb, var(--scr-bg) 55%, transparent) 38%, transparent 70%); }
 .city-pin { position: absolute; left: 50%; top: 46%; z-index: 2; transform: translate(-50%, -100%); font: normal 400 2rem/1 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; letter-spacing: 0; }
-#screen-seat[data-night="true"] .city-pin { filter: drop-shadow(0 0 6px rgba(255, 178, 122, .55)); }
 .city-head { position: absolute; left: 26px; bottom: 18px; z-index: 3; }
 .city-meta { display: flex; gap: 14px; align-items: center; font: 600 .6rem/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--scr-soft); }
 .city-meta b { font-weight: 600; color: var(--orange-text); }

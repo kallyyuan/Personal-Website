@@ -1,44 +1,62 @@
 # Kally Yuan, Personal Website
 
-An interactive flight through Kally's work. Boarding gate, world map, seatback entertainment screen, and a piece view, all in one continuous experience.
+An interactive flight through Kally's work. Opening page, a torn boarding pass, one seatback screen, and every piece opens full size. All in one continuous experience.
 
 ## Links to share
 
-- Whole experience: `your-site-address/`
-- Straight to the work, for recruiters: `your-site-address/#/work`
-- Only one track: `#/work?track=Copywriting`, `#/work?track=Strategy`, `#/work?track=Both`
-- Only one place: `#/work?place=los-angeles` (also `new-york`, `shanghai`, `tokyo`, `kenya`)
+* Whole experience: `your-site-address/`
+* Straight to the work, for recruiters: `your-site-address/#/work`
+* Other sections: `#/writing`, `#/maps`, `#/music`, `#/play`
+* One city: `#/place/tokyo` (also `los-angeles`, `new-york`, `shanghai`, `kenya`)
 
 ## Where everything lives
 
 | What | Where |
 | --- | --- |
-| Headline, boarding pass, labels, "Your captain" card | `js/content/site.js` |
-| Los Angeles work | `js/content/places/los-angeles.js` |
-| New York work | `js/content/places/new-york.js` |
-| Shanghai work and the puzzle | `js/content/places/shanghai.js` |
-| Tokyo work | `js/content/places/tokyo.js` |
-| Kenya work | `js/content/places/kenya.js` |
-| Your photos and graphics | `assets/work/` |
-| Puzzle photos | `assets/puzzle/` |
+| Headline, boarding pass, menu labels, map question, pin emoji, "Your captain" card | `js/content/site.js` |
+| Work (copy, strategy decks, research) | `js/content/work.js` |
+| Writing (personal, academic) | `js/content/writing.js` |
+| Music (favorite albums) | `js/content/music.js` |
+| Play (the puzzle) | `js/content/play.js` |
+| One city: its photography and its writing | `js/content/places/<city>.js` |
+| Your pictures | `assets/work/`, `assets/music/`, `assets/places/` |
+| Puzzle pictures | `assets/watercolor/puzzle-1.webp`, `-2`, `-3` |
 | Colors | top of `css/base.css` |
 
 Everything else is the machinery. You never need to open it.
 
 ## Swap in your real words
 
-1. Open a content file, for example `js/content/places/los-angeles.js`. On GitHub you can click the pencil icon to edit it right in the browser.
+1. Open a content file, for example `js/content/work.js`. On GitHub you can click the pencil icon to edit it right in the browser.
 2. Find a `[PLACEHOLDER: ...]` line. Everything that needs your words is marked this way.
 3. Replace only the text between the quotes. Keep the quotes and the commas.
 4. Save (commit). The site updates in a minute or two.
 
-Each piece of work has the same fields:
+Every piece has the same fields:
 
-- `title`: the name of the piece
-- `track`: exactly one of `'Copywriting'`, `'Strategy'`, `'Both'`
-- `context`: one line on what it was for
-- `shows`: one line on the skill it demonstrates
-- `work`: the piece itself (see below)
+* `id`: a short name nobody else uses, for example `work-copy-5`
+* `title`: the name of the piece
+* `track`: exactly one of `'Copywriting'`, `'Strategy'`, `'Both'`
+* `context`: one line on what it was for
+* `shows`: one line on the skill it demonstrates
+* `work`: the piece itself (see the table below)
+
+To add a piece, copy a whole block (from its opening `{` to its closing `},`), paste it below, and give it a new `id`. To remove one, delete its whole block.
+
+## The kinds of work
+
+Set `work.type` to one of these:
+
+| Type | Used for | What to fill in |
+| --- | --- | --- |
+| `text` | A copy piece: headline, tagline, one liner | `headline`, `body` |
+| `slides` | A strategy deck, research pages, or a photo series | `slides` (add or delete rows) |
+| `image` | One large image | `image` |
+| `essay` | Personal or academic writing | `paragraphs`, `pullQuote` |
+| `album` | A favorite album | `note`, `cover`, `link` |
+| `puzzle` | The jigsaw | see below |
+
+In `work.js`, `kind` decides the group: `'copy'`, `'strategy'` or `'research'`. In `writing.js` it is `'personal'` or `'academic'`.
 
 ## Swap in your real images
 
@@ -51,41 +69,28 @@ Each piece of work has the same fields:
 
 3. Write `alt` as a short, plain description. It is what screen readers say.
 
-Image tips:
+Tips:
 
-- JPG for photos, PNG for graphics with sharp text.
-- About 1600 pixels wide is plenty. Aim for under 300 KB each. squoosh.app shrinks images for free.
-- Leave `src: ''` and the slot shows its labeled placeholder.
+* JPG for photos, PNG for graphics with sharp text.
+* About 1600 pixels wide is plenty. Aim for under 300 KB each. squoosh.app shrinks images for free.
+* Leave `src: ''` and the slot shows its labeled placeholder.
 
-## The different kinds of work
+## Music
 
-Set `work.type` to one of these:
-
-| Type | What it shows | What to fill in |
-| --- | --- | --- |
-| `text` | A snack: headline, tagline, one liner | `headline`, `body` |
-| `slides` | A slideshow or photo series | `slides` (add or delete rows) |
-| `image` | One large image | `image` |
-| `song` | A song with your note on why it matters | `artist`, `note`, `cover`, `link` |
-| `essay` | A personal essay | `paragraphs`, `pullQuote` |
-| `puzzle` | The jigsaw | see below |
-| `slot` | An empty game slot | `note` |
-
-To add a piece, copy a whole block (from its opening `{` to its closing `},`), paste it below, and give it a new unique `id`.
-To remove a piece, delete its whole block.
+Each album in `music.js` has a `vinyl` color: `'indigo'`, `'celadon'`, `'orange'`, `'ink'`, `'jade'` or `'periwinkle'`. Put the cover in `assets/music/` and set `cover.src`. `link` is optional (a Spotify or Apple Music address). Nothing plays by itself.
 
 ## The puzzle
 
-- Photos are `assets/puzzle/puzzle-photo-1`, `-2`, `-3`. Replace them with your childhood photos using the same names, or change the paths in `shanghai.js`.
-- Landscape photos (3 wide by 2 tall) fit best.
-- `cols` and `rows` set the piece count. 4 by 3 is 12 pieces.
-- `congrats` is the message shown when it is finished.
-- To put the puzzle in another place, copy the `puzzle` block from `shanghai.js` into that place's `games` list and give it a new `id`.
+* The three pictures are `assets/watercolor/puzzle-1.webp`, `-2`, `-3`. They are watercolor placeholders. Replace them with your childhood photos using the same names, or change the paths in `play.js`.
+* Landscape photos (3 wide by 2 tall) fit best.
+* `cols` and `rows` set the piece count. 4 by 3 is 12 pieces.
+* `congrats` is the message shown when it is finished.
+* To add another game later, copy the whole block in `play.js` and give it a new `id`.
 
 ## Add another place
 
 1. Copy any file in `js/content/places/` and rename it.
-2. Change `id`, `name`, `sub`, `lat`, `lon` (its latitude and longitude), `tz` (its time zone), and the content.
+2. Change `id`, `name`, `code` (the airport code), `sub`, `lat`, `lon` (its latitude and longitude), `tz` (its time zone), and the content. `group` is `'based'` for where you live and `'been'` for where you have been.
 3. Open `index.html` and add one line next to the others:
    `<script defer src="js/content/places/your-file.js"></script>`
 
@@ -109,7 +114,8 @@ Prefer to keep the repo private? Netlify and Cloudflare Pages both publish priva
 
 ## Good to know
 
-- Works in current Chrome, Safari, Firefox and Edge, on laptops and phones.
-- Keyboard friendly: Tab to move, Enter to open, arrow keys in the menu, Escape to go back.
-- Respects the "reduce motion" setting on phones and computers.
-- No tracking, no cookies, nothing to install.
+* Works in current Chrome, Safari, Firefox and Edge, on laptops and phones.
+* Keyboard friendly: Tab to move, Enter to open, arrow keys in the menu, Escape to go back.
+* Respects the "reduce motion" setting on phones and computers.
+* Sound is off until a visitor turns it on.
+* No tracking, no cookies, nothing to install.
