@@ -2,7 +2,7 @@
    TOKYO  (where I have been)
    Each place has its own photography series and personal writing.
    group is 'based' (where you live now) or 'been' (where you have been).
-   code is the three letter airport code. lat and lon place the lighthouse on the map.
+   code is the three letter airport code. lat and lon place the pin on the map.
    ========================================================================== */
 
 window.KALLY = window.KALLY || { places: [] };

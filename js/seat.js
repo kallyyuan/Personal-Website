@@ -201,7 +201,7 @@
       const old = viewEl.firstElementChild;
       const via = ctx.opts && ctx.opts.via;
       if (via === 'fly' && old && ctx.same && ctx.opts.origin && !KY.reducedMotion()) {
-        /* the new page opens like a lens from the lighthouse you flew to */
+        /* the new page opens like a lens from the pin you flew to */
         next.classList.add('is-overlay');
         viewEl.append(next);
         const o = ctx.opts.origin;

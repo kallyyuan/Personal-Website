@@ -51,10 +51,6 @@
   }
 
   /* ---------- drawing ---------- */
-  const PIN_SVG = `<svg class="pin-svg" viewBox="0 0 24 40" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
-      <path d="M8.5 37L9.8 14H14.2L15.5 37Z"/><path d="M9.3 26H14.7M8.9 32H15.1"/><path d="M7.4 14H16.6"/>
-      <rect x="9.6" y="8" width="4.8" height="6"/><path d="M8.6 8L12 3L15.4 8Z"/><path d="M5 37H19"/></g>
-      <circle class="pin-lamp" cx="12" cy="11" r="1.7" fill="#E07B39"/></svg>`;
   const PLANE_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="var(--scr-bg)" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"
       d="M12 2.2L13.6 9.2L21.6 13.6V15.4L13.6 13.4L13 19L15.6 20.8V22L12 21L8.4 22V20.8L11 19L10.4 13.4L2.4 15.4V13.6L10.4 9.2Z"/></svg>`;
 
@@ -90,7 +86,7 @@
     const pinEls = D.places.map((p) => {
       const a = h('a', { class: 'pin pin--' + p.group, href: KY.href.place(p.id), 'data-id': p.id, style: pct(pt(p)), 'aria-label': p.name + ', ' + p.sub },
         h('span', { class: 'pin-ring', 'aria-hidden': 'true' }),
-        h('span', { class: 'pin-icon', html: PIN_SVG }),
+        h('span', { class: 'pin-icon', 'aria-hidden': 'true' }, site.map.pin || '📍'),
         h('span', { class: 'pin-code', 'aria-hidden': 'true' }, p.code),
         h('span', { class: 'pin-card', 'aria-hidden': 'true' },
           h('span', { class: 'pin-name' }, p.name),
@@ -193,7 +189,7 @@
       if (!state.alive) return;
       const vb = document.querySelector('.scr-view').getBoundingClientRect();
       const ib = el.querySelector('.pin-icon').getBoundingClientRect();
-      KY.go(KY.href.place(id), { via: 'fly', origin: { x: ib.left + ib.width / 2 - vb.left, y: ib.top + ib.height * 0.3 - vb.top } });
+      KY.go(KY.href.place(id), { via: 'fly', origin: { x: ib.left + ib.width / 2 - vb.left, y: ib.top + ib.height * 0.85 - vb.top } });
     }
 
     root._onKey = (e) => {

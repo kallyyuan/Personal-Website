@@ -64,7 +64,10 @@ KALLY.site = {
   },
 
   /* Maps opens by asking this */
-  map: { ask: 'Where to?' },
+  map: {
+    ask: 'Where to?',
+    pin: '📍',              /* the marker on every place. Swap it for any other emoji. */
+  },
 
   ui: {
     menu: 'Menu',

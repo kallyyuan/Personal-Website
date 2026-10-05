@@ -89,7 +89,9 @@ To remove a piece, delete its whole block.
 3. Open `index.html` and add one line next to the others:
    `<script defer src="js/content/places/your-file.js"></script>`
 
-A new lighthouse appears on the map by itself.
+A new pin appears on the map by itself.
+
+Every place is marked with 📍. To use a different emoji, change `pin` in `js/content/site.js` under `map`.
 
 ## Your captain card
 

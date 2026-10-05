@@ -27,7 +27,7 @@
     const hero = h('div', { class: 'city-hero' },
       h('img', { class: 'city-map city-map--day', src: 'assets/watercolor/map.webp', alt: '', decoding: 'async' }),
       h('img', { class: 'city-map city-map--night', src: 'assets/watercolor/map-night.webp', alt: '', decoding: 'async' }),
-      h('span', { class: 'city-pin', html: '<svg viewBox="0 0 24 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"><path d="M8.5 37L9.8 14H14.2L15.5 37Z"/><path d="M9.3 26H14.7M8.9 32H15.1"/><path d="M7.4 14H16.6"/><rect x="9.6" y="8" width="4.8" height="6"/><path d="M8.6 8L12 3L15.4 8Z"/><path d="M5 37H19"/></g><circle cx="12" cy="11" r="1.7" fill="#E07B39"/></svg>' }),
+      h('span', { class: 'city-pin', 'aria-hidden': 'true' }, site.map.pin || '📍'),
       h('div', { class: 'city-head' },
         h('p', { class: 'city-meta' }, h('b', null, p.code), label),
         h('h1', { class: 'city-name', id: 'seat-title', 'data-focus': '', tabindex: '-1' }, p.name),
